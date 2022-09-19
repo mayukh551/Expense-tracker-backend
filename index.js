@@ -25,8 +25,9 @@ app.get('/', (req, res) => {
 
 app.use('/expenses', expenseRouter);
 
-const serverURL = "https://mighty-eyrie-95374.herokuapp.com/"
+// const serverURL = "https://mighty-eyrie-95374.herokuapp.com/"
+const port = process.env.PORT || 5000;
 
-app.listen(serverURL, () => {
+app.listen(port, () => {
     console.log('Server is Live on port deployed url');
 })
