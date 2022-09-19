@@ -19,9 +19,14 @@ mongoose.connect(url, connectionParams)
     .then(() => console.log('Connected to MongoDB'))
     .catch(() => console.log('Connection Failed'));
 
+app.get('/', (req, res) => {
+    res.send("Server is Live");
+})
 
 app.use('/expenses', expenseRouter);
 
-app.listen(8800, () => {
-    console.log('Server is Live on port 8800');
+const serverURL = "https://mighty-eyrie-95374.herokuapp.com/"
+
+app.listen(serverURL, () => {
+    console.log('Server is Live on port deployed url');
 })
