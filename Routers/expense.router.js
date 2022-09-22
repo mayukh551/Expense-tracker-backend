@@ -1,7 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const Expense = require('../Models/expense.model.js');
+const statRouter = require('./expense.stat.router');
 
+const expenseController = require('../Controllers/expenseController');
+
+const { fetchAllExpenses, addNewExpense, updateExpense, deleteExpense } = expenseController;
+
+// try-catch wrapper function for controllers
 function asyncWrap(fn, msg) {
     return (req, res) => {
         fn(req, res)
@@ -10,51 +15,24 @@ function asyncWrap(fn, msg) {
     }
 }
 
-
 // FETCH ALL EXPENSES
-router.route('/').get(asyncWrap(async (req, res) => {
-    console.log('get all requests');
-    const response = await Expense.find({});
-    res.json(response);
-}))
-
+router.route('/').get(asyncWrap(fetchAllExpenses, 'Fetch all expenses'))
 
 // ADD NEW EXPENSE
-router.route('/new').post(asyncWrap((req, res) => {
-    console.log(req.body);
-    const userDate = req.body.date;
-    const userLabel = req.body.title;
-    const userPrice = req.body.amount;
-    const newExpense = new Expense({
-        date: userDate,
-        title: userLabel,
-        amount: userPrice
-    })
-    newExpense.save();
-}, "New Expense Added"));
-
+router.route('/new').post(asyncWrap(addNewExpense, "New Expense Added"));
 
 // DELETE AN EXPENSE
-router.route('/delete/:id').delete(asyncWrap(async (req, res) => {
-    const { id } = req.params;
-    console.log("ID is :", id);
-    await Expense.findByIdAndDelete(id);
-}, "Expense Deleted"));
-
+router.route('/delete/:id').delete(asyncWrap(updateExpense, "Expense Deleted"));
 
 // UPDATE AN EXPENSE
-router.route('/update/:id').put(asyncWrap(async (req, res) => {
-    const { id } = req.params;
-    console.log("req.body: ", req.body);
-    const updatedDate = req.body.date;
-    const updatedLabel = req.body.title;
-    const updatedPrice = req.body.amount;
-    await Expense.findByIdAndUpdate(id, {
-        title: updatedLabel,
-        date: updatedDate,
-        amount: updatedPrice
-    });
-}, "Expense Updated"));
+router.route('/update/:id').put(asyncWrap(deleteExpense, "Expense Updated"));
+
+router.use('/stats', statRouter)
+
+router.route('*').get((req, res) => {
+    console.log('Invalid URL');
+    res.status(404).json({ status: "failure", message: "Invalid URL" });
+})
 
 
 module.exports = router;

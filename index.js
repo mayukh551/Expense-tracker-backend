@@ -2,7 +2,6 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
-// const Expense = require('./Models/expense.model.js');
 const expenseRouter = require('./Routers/expense.router');
 
 app.use(cors());
@@ -25,7 +24,6 @@ app.get('/', (req, res) => {
 
 app.use('/expenses', expenseRouter);
 
-// const serverURL = "https://mighty-eyrie-95374.herokuapp.com/"
 const port = process.env.PORT || 5000;
 
 app.listen(port, () => {
