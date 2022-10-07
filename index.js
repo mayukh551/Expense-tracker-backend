@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const expenseRouter = require('./Routers/expense.router');
+const { errorLogger, errorResponder, failSafeHandler } = require('./Middleware/error-handler');
 
 app.use(cors());
 app.use(express.json()) // for parsing application/json
@@ -23,6 +24,11 @@ app.get('/', (req, res) => {
 })
 
 app.use('/expenses', expenseRouter);
+
+// error-handling middlewaqre
+app.use(errorLogger);
+app.use(errorResponder);
+app.use(failSafeHandler);
 
 const port = process.env.PORT || 5000;
 
