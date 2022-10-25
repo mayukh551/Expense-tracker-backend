@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const expenseRouter = require('./Routers/expense.router');
+const authRouter = require('./Routers/auth.router');
 const { errorLogger, errorResponder, failSafeHandler } = require('./Middleware/error-handler');
 
 app.use(cors());
@@ -22,6 +23,8 @@ mongoose.connect(url, connectionParams)
 app.get('/', (req, res) => {
     res.send("Server is Live");
 })
+
+app.use('/login',)
 
 app.use('/expenses', expenseRouter);
 
