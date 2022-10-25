@@ -1,6 +1,6 @@
 const Expense = require('../Models/expense.model.js');
 
-exports.fetchAllExpenses = async (req, res) => {
+exports.fetchAllExpenses = async (req, res, next) => {
     try {
         const response = await Expense.find({});
         res.json(response);
@@ -9,7 +9,7 @@ exports.fetchAllExpenses = async (req, res) => {
     }
 }
 
-exports.addNewExpense = async (req, res) => {
+exports.addNewExpense = async (req, res, next) => {
     console.log(req.body);
     const userDate = req.body.date;
     const userLabel = req.body.title;
