@@ -24,8 +24,9 @@ app.get('/', (req, res) => {
     res.send("Server is Live");
 })
 
-app.use('/login',)
 
+// API Routes
+app.use('/auth', authRouter);
 app.use('/expenses', expenseRouter);
 
 // error-handling middlewaqre

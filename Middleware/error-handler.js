@@ -9,7 +9,10 @@ function errorLogger(err, req, res, next) {
 
 function errorResponder(err, req, res, next) {
     console.log("Sending appropriate msg to user")
-    if (err.type === 'INVALID_ID')
+
+    if (err.type === "AUTH_ERROR")
+        res.status(404).json({ error: err, message: 'auth error' })
+    else if (err.type === 'INVALID_ID')
         res.status(404).json({ error: err, message: "Item ID is incorrect!" })
     else
         next(err);
