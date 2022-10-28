@@ -6,7 +6,7 @@ const expenseRouter = require('./Routers/expense.router');
 const { errorLogger, errorResponder, failSafeHandler } = require('./Middleware/error-handler');
 
 app.use(cors({
-    origin: '*'
+    origin: 'https://expense-tracker-backend-pf1gk2qsb-mayukh551.vercel.app'
 }));
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
