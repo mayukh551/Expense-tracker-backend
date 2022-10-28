@@ -11,15 +11,15 @@ function errorResponder(err, req, res, next) {
     console.log("Sending appropriate msg to user")
 
     if (err.type === "AUTH_ERROR")
-        res.status(404).json({ error: err, message: 'auth error' })
+        res.status(401).json({ error: err, isSuccess: false, message: 'Unauthorized attempt' })
     else if (err.type === 'INVALID_ID')
-        res.status(404).json({ error: err, message: "Item ID is incorrect!" })
+        res.status(404).json({ error: err, isSuccess: false, message: "Item ID is incorrect!" })
     else
         next(err);
 }
 
 function failSafeHandler(err, req, res, next) {
-    res.status(500).json({ error: err, message: "Server Error" })
+    res.status(500).json({ error: err, isSuccess: false, message: "Server Error" })
 }
 
 module.exports = {
