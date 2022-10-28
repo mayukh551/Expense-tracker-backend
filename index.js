@@ -5,7 +5,8 @@ const mongoose = require('mongoose');
 const expenseRouter = require('./Routers/expense.router');
 const { errorLogger, errorResponder, failSafeHandler } = require('./Middleware/error-handler');
 
-app.use(cors());
+app.use(cors())
+app.options('*', cors());
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
