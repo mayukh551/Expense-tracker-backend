@@ -1,6 +1,7 @@
-// const User = require('../Models/user.model.js');
-const bycript = require('bcryptjs');
+const User = require('../Models/user.model.js');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const AuthError = require('../Error/AuthError');
 
 const register = async (req, res, next) => {
     console.log('in register');
@@ -9,17 +10,25 @@ const register = async (req, res, next) => {
         const { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-            err.type = 'authError'
-            next(err);
+            next(new AuthError('Verification Failed'));
         }
 
-        const hashedPassword = await bycript.hash(password, 10)
+        // To check if account already exists with the same email
+        if (email) {
+            const user = await User.findOne({ email: email });
+            if (user)
+                next(new AuthError('You already have an existing account. Log in!'));
+        }
+
+        // hashing password for storage in DB
+        const hashedPassword = await bcrypt.hash(password, 10)
         console.log(name, email, hashedPassword);
-        // await new User({
-        //     username: username,
-        //     email: email,
-        //     password: hashedPassword
-        // })
+        const newUser = new User({
+            name: name,
+            email: email,
+            password: hashedPassword
+        });
+        await newUser.save();
         const token = jwt.sign({
             name: name,
             email: email
@@ -29,70 +38,43 @@ const register = async (req, res, next) => {
 
     }
     catch (err) {
-        err.type = 'AUTH_ERROR'
         next(err);
     }
 }
 
 const login = async (req, res, next) => {
     console.log('in login');
-    // try {
-    //     const user = await User.findOne({ email: req.body.email })
-    //     if (user) {
-    //         // comparing login password with password from DB
-    //         const isValidPassword = bcrypt.compare(user.password, req.body.password)
-    //         if (isValidPassword) {
-    //             // create token
-    //             const token = jwt.sign({
-    //                 name: user.name,
-    //                 email: user.email
-    //             }, '3546asdfa06a5sas6dfgas564as')
-
-    //             res.status(200).json({ status: 'success', user: token })
-    //         } else {
-    //             throw new Error('Login failed!');
-    //         }
-    //     }
-    //     else {
-    //         throw new Error('Login failed!');
-    //     }
-    // } catch (error) {
-    //     error.type = 'AUTH_ERROR'
-    //     next(error);
-    // }
-}
-
-const verifyUser = async (req, res, next) => {
-    const token = req.headers['x-access-token'];
-    console.log('token received', token);
-    var decoded;
+    console.log(req.body);
     try {
-        if (token) {
-            console.log('before verification');
-            try {
-                decoded = jwt.verify(token, '3546asdfa06a5sas6dfgas564as');
-            } catch (error) {
-                throw new Error('verification failed');
-            }
-            console.log('after verification');
-            if (decoded) {
-                // const email = decoded.email;
-                // const user = await User.findOne({ email: email });
-                // res.status(200).json({ status: 'success', expenseId: user.expenses })
-                next();
+        const user = await User.findOne({ email: req.body.email })
+        // if user exists
+        if (user) {
+            // comparing login password with password from DB
+            const isValidPassword = await bcrypt.compare(req.body.password, user.password);
+            console.log('is Passowrd Valid?', isValidPassword);
+            if (isValidPassword) {
+                // create token
+                const token = jwt.sign({
+                    name: user.name,
+                    email: user.email
+                }, '3546asdfa06a5sas6dfgas564as')
+                console.log('token: ', token);
+                res.status(200).json({ isSuccess: true, token: token })
             } else {
-                throw new Error('verification failed');
+                throw new AuthError('Login failed!');
             }
         }
+
+        // if user does not exist
+        else {
+            throw new AuthError('You do not have an account. Sign Up!');
+        }
     } catch (error) {
-        error.type = 'AUTH_ERROR';
         next(error);
     }
 }
 
-
 module.exports = {
     login,
-    register,
-    verifyUser
+    register
 }
