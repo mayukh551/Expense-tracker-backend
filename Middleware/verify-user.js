@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
-const AuthError = require('../Error/AuthError')
+const AuthError = require('../Error/AuthError');
+const privateKey = process.env.PRIVATE_KEY;
 
 const verifyUser = (req, next) => {
     try {
@@ -11,7 +12,7 @@ const verifyUser = (req, next) => {
         if (token) {
             console.log('before verification');
             try {
-                decoded = jwt.verify(token, '3546asdfa06a5sas6dfgas564as');
+                decoded = jwt.verify(token, privateKey);
             } catch (error) {
                 // throw new Error('verification failed');
                 throw new AuthError('Unauthorized attempt');

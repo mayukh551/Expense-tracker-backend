@@ -2,6 +2,7 @@ const User = require('../Models/user.model.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthError = require('../Error/AuthError');
+const privateKey = process.env.PRIVATE_KEY;
 
 const register = async (req, res, next) => {
     console.log('in register');
@@ -32,7 +33,7 @@ const register = async (req, res, next) => {
         const token = jwt.sign({
             name: name,
             email: email
-        }, '3546asdfa06a5sas6dfgas564as')
+        }, privateKey)
 
         res.status(200).json({ isSuccess: true, user: token })
 
@@ -57,7 +58,7 @@ const login = async (req, res, next) => {
                 const token = jwt.sign({
                     name: user.name,
                     email: user.email
-                }, '3546asdfa06a5sas6dfgas564as')
+                }, privateKey)
                 console.log('token: ', token);
                 res.status(200).json({ isSuccess: true, token: token })
             } else {
