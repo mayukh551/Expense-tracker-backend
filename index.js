@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
-const url = "mongodb+srv://mongoUser:UMeZWwfjbKKpz57v@cluster0.znp6gdd.mongodb.net/test?retryWrites=true&w=majority";
+const url = process.env.DB_URL;
 
 const connectionParams = {
     useNewUrlParser: true
