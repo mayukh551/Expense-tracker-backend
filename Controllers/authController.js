@@ -2,7 +2,8 @@ const User = require('../Models/user.model.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthError = require('../Error/AuthError');
-const privateKey = process.env.PRIVATE_KEY;
+// const privateKey = process.env.PRIVATE_KEY;
+const privateKey = '3546asdfa06a5sas6dfgas564as';
 
 const register = async (req, res, next) => {
     console.log('in register');
@@ -35,7 +36,7 @@ const register = async (req, res, next) => {
             email: email
         }, privateKey)
 
-        res.status(200).json({ isSuccess: true, user: token })
+        res.status(200).json({ isSuccess: true, token: token })
 
     }
     catch (err) {

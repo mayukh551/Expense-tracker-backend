@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const AuthError = require('../Error/AuthError');
-const privateKey = process.env.PRIVATE_KEY;
+// const privateKey = process.env.PRIVATE_KEY;
+const privateKey = '3546asdfa06a5sas6dfgas564as';;
 
 const verifyUser = (req, next) => {
     try {
