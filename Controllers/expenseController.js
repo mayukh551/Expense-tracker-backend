@@ -3,12 +3,9 @@ const verifyUser = require('../Middleware/verify-user');
 const User = require('../Models/user.model');
 
 exports.fetchAllExpenses = async (req, res, next) => {
-<<<<<<< HEAD
-=======
     const decoded = verifyUser(req, next);
     console.log('its decoded', decoded);
     const email = decoded.email;
->>>>>>> auth
     try {
         const user = await User.findOne({ email: email });
         res.json(user.expenses);
@@ -64,7 +61,7 @@ exports.updateExpense = async (req, res, next) => {
 // write code on how to delete an item from an array
 exports.deleteExpense = async (req, res, next) => {
     const { id } = req.params;
-    findProductAndUpdateExpense(req, res, next, id, data={}, (i, expenses) => {
+    findProductAndUpdateExpense(req, res, next, id, data = {}, (i, expenses) => {
         expenses.splice(i, i);
         return expenses;
     })
