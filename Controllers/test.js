@@ -1,5 +1,5 @@
-const myArray = [1, 2, 3, 4, 5];
-
-myArray.splice(2, 2);
-
-console.log(`myArray values: ${myArray}`);
+var fruits = ["Banana", "Orange", "Lemon", "Apple", "Mango"];
+// fruits = fruits.slice(1);
+fruits.splice(0, 1);
+// console.log(citrus, fruits);
+console.log(fruits);
