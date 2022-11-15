@@ -2,8 +2,7 @@ const User = require('../Models/user.model.js');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const AuthError = require('../Error/AuthError');
-// const privateKey = process.env.PRIVATE_KEY;
-const privateKey = '3546asdfa06a5sas6dfgas564as';
+const privateKey = process.env.PRIVATE_KEY;
 
 const register = async (req, res, next) => {
     console.log('in register');
