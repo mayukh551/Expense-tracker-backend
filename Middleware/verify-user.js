@@ -1,8 +1,9 @@
 const jwt = require('jsonwebtoken');
 const AuthError = require('../Error/AuthError');
-const privateKey = process.env.PRIVATE_KEY;
 
 const verifyUser = (req, next) => {
+    require("dotenv").config({ path: '../.env' });
+    const privateKey = process.env.PRIVATE_KEY;
     try {
         const token = req.headers['x-access-token'];
         if (!token)

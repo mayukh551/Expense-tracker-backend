@@ -1,1 +1,4 @@
 .env
+/Controllers/env
+
+/node_modules/

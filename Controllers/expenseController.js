@@ -6,12 +6,14 @@ exports.fetchAllExpenses = async (req, res, next) => {
     const decoded = verifyUser(req, next);
     // console.log('its decoded', decoded);
     const email = decoded.email;
-    try {
-        const user = await User.findOne({ email: email });
+
+    const user = await User.findOne({ email: email });
+    if (user) {
         console.log(user.expenses);
         res.json(user.expenses);
-    } catch (err) {
-        next(new CrudError('DB_ERROR'))
+    }
+    else {
+        throw new CrudError('DB_ERROR');
     }
 }
 
@@ -24,8 +26,9 @@ exports.addNewExpense = async (req, res, next) => {
     const decoded = verifyUser(req, next);
     // console.log('its decoded', decoded);
     const email = decoded.email;
-    try {
-        const user = await User.findOne({ email: email });
+
+    const user = await User.findOne({ email: email });
+    if (user) {
         user.expenses.push({
             id: productId,
             date: userDate,
@@ -37,10 +40,13 @@ exports.addNewExpense = async (req, res, next) => {
         const updatedUser = await User.findByIdAndUpdate(userId, user);
         await updatedUser.save();
         console.log('New Expense Added', updatedUser, (updatedUser.id));
-        res.status(200).json(updatedUser);
-    } catch (err) {
-        next(new CrudError('DB_ERROR'));
+
+        if (updatedUser) res.status(200).json(updatedUser);
+
+        else next(new CrudError('DB_ERROR'));
+
     }
+    else next(new CrudError('DB_ERROR'));
 
 }
 
@@ -80,28 +86,25 @@ const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic)
     const decoded = verifyUser(req, next);
     // console.log('it is decoded: ', decoded);
     const email = decoded.email;
-    try {
-        const user = await User.findOne({ email: email });
-        var expenses = user.expenses;
-        var hasFound = false;
+    const user = await User.findOne({ email: email });
+    var expenses = user.expenses;
+    var hasFound = false;
 
-        for (let i = 0; i < expenses.length; i++) {
-            var dbProductId = (expenses[i].id);
-            if (dbProductId === id) {
-                console.log('Item Found: ', dbProductId);
-                expenses = logic(i, expenses);
-                hasFound = true;
-                break;
-            }
+    for (let i = 0; i < expenses.length; i++) {
+        var dbProductId = (expenses[i].id);
+        if (dbProductId === id) {
+            console.log('Item Found: ', dbProductId);
+            expenses = logic(i, expenses);
+            hasFound = true;
+            break;
         }
-        if (hasFound) {
-            user.expenses = expenses;
-            const doc = await User.findByIdAndUpdate(user._id, user)
-            await doc.save();
-        } else {
-            throw new CrudError('INVALID_ID')
-        }
-    } catch (err) {
-        next(err);
     }
+    if (hasFound) {
+        user.expenses = expenses;
+        const doc = await User.findByIdAndUpdate(user._id, user)
+        await doc.save();
+    } else {
+        throw new CrudError('INVALID_ID')
+    }
+
 }

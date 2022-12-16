@@ -5,11 +5,11 @@ const mongoose = require('mongoose');
 const expenseRouter = require('./Routers/expense.router');
 const authRouter = require('./Routers/auth.router');
 const { errorLogger, errorResponder, failSafeHandler } = require('./Middleware/error-handler');
-// const verifyUser = require('./Middleware/verify-user.js');
 
 app.use(cors());
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+require("dotenv").config();
 
 const url = process.env.DB_URL;
 
@@ -28,6 +28,7 @@ app.get('/', (req, res) => {
 // request testing
 app.use((req, res, next) => {
     console.log("Request Incoming");
+    console.log(req.headers);
     next();
 })
 
