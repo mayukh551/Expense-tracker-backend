@@ -37,8 +37,11 @@ exports.addNewExpense = async (req, res, next) => {
         })
         console.log('new data pushed', user.expenses);
         const userId = user._id;
+        console.log('before find user');
         const updatedUser = await User.findByIdAndUpdate(userId, user);
+        console.log('after find user');
         await updatedUser.save();
+        console.log('afer save');
         console.log('New Expense Added', updatedUser, (updatedUser.id));
 
         if (updatedUser) res.status(200).json(updatedUser);
@@ -103,6 +106,7 @@ const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic)
         user.expenses = expenses;
         const doc = await User.findByIdAndUpdate(user._id, user)
         await doc.save();
+        res.status(200).json(doc);
     } else {
         throw new CrudError('INVALID_ID')
     }
