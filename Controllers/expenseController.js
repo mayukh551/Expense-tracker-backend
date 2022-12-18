@@ -110,5 +110,4 @@ const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic)
     } else {
         throw new CrudError('INVALID_ID')
     }
-
 }
