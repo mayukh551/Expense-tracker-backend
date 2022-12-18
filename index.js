@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const expenseRouter = require('./Routers/expense.router');
 const authRouter = require('./Routers/auth.router');
 const errorHandler = require('./Middleware/error-handler');
+const dayjs = require('dayjs')
 
 app.use(cors());
 app.use(express.json()) // for parsing application/json
@@ -27,8 +28,7 @@ app.get('/', (req, res) => {
 
 // request testing
 app.use((req, res, next) => {
-    console.log("Request Incoming");
-    console.log(req.headers);
+    console.log(`Incoming Request at ${dayjs().hour()}:${dayjs().minute()}\n`);
     next();
 })
 

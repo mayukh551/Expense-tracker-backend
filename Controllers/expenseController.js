@@ -9,7 +9,6 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     const user = await User.findOne({ email: email });
     if (user) {
-        console.log(user.expenses);
         res.json(user.expenses);
     }
     else {
