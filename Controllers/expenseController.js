@@ -88,7 +88,12 @@ exports.deleteExpense = async (req, res, next) => {
 const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic) => {
     const decoded = verifyUser(req, next);
     // console.log('it is decoded: ', decoded);
-    const email = decoded.email;
+    var email;
+    try {
+        email = decoded.email;
+    } catch (err) {
+        throw new AuthError('Unauthorized Attempt!');
+    }
     const user = await User.findOne({ email: email });
     var expenses = user.expenses;
     var hasFound = false;
@@ -111,4 +116,5 @@ const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic)
         console.log('throw error due to invalid id');
         next(new CrudError('INVALID_ID'));
     }
+
 }
