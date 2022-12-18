@@ -4,7 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const expenseRouter = require('./Routers/expense.router');
 const authRouter = require('./Routers/auth.router');
-const { errorLogger, errorResponder, failSafeHandler } = require('./Middleware/error-handler');
+const errorHandler = require('./Middleware/error-handler');
 
 app.use(cors());
 app.use(express.json()) // for parsing application/json
@@ -34,13 +34,10 @@ app.use((req, res, next) => {
 
 // API Routes
 app.use('/auth', authRouter);
-// app.use('/expenses', verifyUser, expenseRouter);
 app.use('/expenses', expenseRouter);
 
 // error-handling middlewaqre
-app.use(errorLogger);
-app.use(errorResponder);
-app.use(failSafeHandler);
+app.use(errorHandler);
 
 const port = process.env.PORT || 5000;
 

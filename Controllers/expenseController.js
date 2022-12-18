@@ -108,6 +108,7 @@ const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic)
         await doc.save();
         res.status(200).json(doc);
     } else {
-        throw new CrudError('INVALID_ID')
+        console.log('throw error due to invalid id');
+        next(new CrudError('INVALID_ID'));
     }
 }
