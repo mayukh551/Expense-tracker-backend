@@ -7,10 +7,10 @@ exports.fetchAllExpenses = async (req, res, next) => {
     // console.log('its decoded', decoded);
     const email = decoded.email;
 
-    const user = await User.findOne({ email: email });
-    if (user) {
-        console.log(user.expenses);
-        res.json(user.expenses);
+    const expenses = await User.findOne({ email: email }, 'expenses');
+    if (expenses) {
+        console.log(expenses);
+        res.json(expenses);
     }
     else {
         throw new CrudError('DB_ERROR');
@@ -27,15 +27,16 @@ exports.addNewExpense = async (req, res, next) => {
     // console.log('its decoded', decoded);
     const email = decoded.email;
 
-    const user = await User.findOne({ email: email });
-    if (user) {
-        user.expenses.push({
+    const user = await User.findOne({ email: email }, 'expenses _id');
+    const { expenses } = user;
+    if (expenses) {
+        expenses.push({
             id: productId,
             date: userDate,
             title: userLabel,
             amount: userPrice
         })
-        console.log('new data pushed', user.expenses);
+        console.log('new data pushed', expenses);
         const userId = user._id;
         console.log('before find user');
         const updatedUser = await User.findByIdAndUpdate(userId, user);
@@ -116,5 +117,4 @@ const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic)
         console.log('throw error due to invalid id');
         next(new CrudError('INVALID_ID'));
     }
-
 }
