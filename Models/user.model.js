@@ -23,11 +23,13 @@ const userSchema = new Schema({
                 return e.includes('@')
             },
             message: "Invalid Email Id"
-        }
+        },
+        maxLength: 40,
     },
     password: {
         ...stringTypeFields,
         minLength: 6,
+        maxLength: 1000000,
         required: [true, 'Password is compulsory'],
     },
     expenses: {

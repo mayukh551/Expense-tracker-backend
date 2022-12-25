@@ -29,6 +29,8 @@ const register = async (req, res, next) => {
         password: hashedPassword
     });
     await newUser.save();
+    require("dotenv").config({ path: '../.env' });
+    const privateKey = process.env.PRIVATE_KEY;
     const token = jwt.sign({
         name: name,
         email: email

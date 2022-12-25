@@ -4,12 +4,10 @@ const User = require('../Models/user.model');
 
 exports.fetchAllExpenses = async (req, res, next) => {
     const decoded = verifyUser(req, next);
-    // console.log('its decoded', decoded);
     const email = decoded.email;
 
-    const expenses = await User.findOne({ email: email }, 'expenses');
+    const { expenses } = await User.findOne({ email: email }, 'expenses -_id');
     if (expenses) {
-        console.log(expenses);
         res.json(expenses);
     }
     else {
@@ -36,16 +34,12 @@ exports.addNewExpense = async (req, res, next) => {
             title: userLabel,
             amount: userPrice
         })
-        console.log('new data pushed', expenses);
         const userId = user._id;
-        console.log('before find user');
-        const updatedUser = await User.findByIdAndUpdate(userId, user);
-        console.log('after find user');
+        const updatedUser = await User.findByIdAndUpdate(userId, user, { new: true });
         await updatedUser.save();
         console.log('afer save');
-        console.log('New Expense Added', updatedUser, (updatedUser.id));
 
-        if (updatedUser) res.status(200).json(updatedUser);
+        if (updatedUser) res.status(200).json(updatedUser.expenses);
 
         else next(new CrudError('DB_ERROR'));
 
@@ -110,7 +104,7 @@ const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic)
     }
     if (hasFound) {
         user.expenses = expenses;
-        const doc = await User.findByIdAndUpdate(user._id, user)
+        const doc = await User.findByIdAndUpdate(user._id, user, { new: true });
         await doc.save();
         res.status(200).json(doc);
     } else {
