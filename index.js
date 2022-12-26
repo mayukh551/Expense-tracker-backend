@@ -7,7 +7,9 @@ const authRouter = require('./Routers/auth.router');
 const errorHandler = require('./Middleware/error-handler');
 const dayjs = require('dayjs')
 
-app.use(cors());
+app.use(cors({
+    origin: 'https://expense-tracker-react-nine.vercel.app'
+}));
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 require("dotenv").config();
