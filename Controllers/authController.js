@@ -10,7 +10,7 @@ const register = async (req, res, next) => {
     const { name, email, password } = req.body;
 
     if (!name || !email || !password) {
-        next(new AuthError('Verification Failed'));
+        next(new AuthError('Missing Fields'));
     }
 
     // To check if account already exists with the same email
@@ -29,6 +29,8 @@ const register = async (req, res, next) => {
         password: hashedPassword
     });
     await newUser.save();
+    require("dotenv").config({ path: '../.env' });
+    const privateKey = process.env.PRIVATE_KEY;
     const token = jwt.sign({
         name: name,
         email: email

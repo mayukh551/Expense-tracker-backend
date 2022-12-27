@@ -4,12 +4,11 @@ const User = require('../Models/user.model');
 
 exports.fetchAllExpenses = async (req, res, next) => {
     const decoded = verifyUser(req, next);
-    // console.log('its decoded', decoded);
     const email = decoded.email;
 
-    const user = await User.findOne({ email: email });
-    if (user) {
-        res.json(user.expenses);
+    const { expenses } = await User.findOne({ email: email }, 'expenses -_id');
+    if (expenses) {
+        res.json(expenses);
     }
     else {
         throw new CrudError('DB_ERROR');
@@ -26,24 +25,21 @@ exports.addNewExpense = async (req, res, next) => {
     // console.log('its decoded', decoded);
     const email = decoded.email;
 
-    const user = await User.findOne({ email: email });
-    if (user) {
-        user.expenses.push({
+    const user = await User.findOne({ email: email }, 'expenses _id');
+    const { expenses } = user;
+    if (expenses) {
+        expenses.push({
             id: productId,
             date: userDate,
             title: userLabel,
             amount: userPrice
         })
-        console.log('new data pushed', user.expenses);
         const userId = user._id;
-        console.log('before find user');
-        const updatedUser = await User.findByIdAndUpdate(userId, user);
-        console.log('after find user');
+        const updatedUser = await User.findByIdAndUpdate(userId, user, { new: true });
         await updatedUser.save();
         console.log('afer save');
-        console.log('New Expense Added', updatedUser, (updatedUser.id));
 
-        if (updatedUser) res.status(200).json(updatedUser);
+        if (updatedUser) res.status(200).json(updatedUser.expenses);
 
         else next(new CrudError('DB_ERROR'));
 
@@ -108,12 +104,11 @@ const findProductAndUpdateExpense = async (req, res, next, id, data = {}, logic)
     }
     if (hasFound) {
         user.expenses = expenses;
-        const doc = await User.findByIdAndUpdate(user._id, user)
+        const doc = await User.findByIdAndUpdate(user._id, user, { new: true });
         await doc.save();
         res.status(200).json(doc);
     } else {
         console.log('throw error due to invalid id');
         next(new CrudError('INVALID_ID'));
     }
-
 }

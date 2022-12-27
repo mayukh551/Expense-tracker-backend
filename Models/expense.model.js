@@ -1,27 +1,36 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+const stringTypeFields = {
+    type: String,
+    minLength: 1,
+    maxLength: 40,
+    trim: true
+}
+
 const expenseSchema = new Schema({
     id: {
         type: String,
-        required: true
+        required: [true, 'Every item should have a unique id'],
+        unique: true
     },
+
     date: {
         type: String,
-        required: true
+        required: [true, 'Date is compulsory']
     },
 
     title: {
-        type: String,
-        required: true
+        ...stringTypeFields,
+        required: [true, 'item title is compulsory']
     },
+
     amount: {
         type: Number,
-        required: true
+        min: 1,
+        max: 999999999999999,
+        required: [true, 'Purchase Amount is requried']
     }
 })
 
-// const Expense = mongoose.model('Expense', expenseSchema);
-
-// module.exports = { Expense, expenseSchema };
 module.exports = expenseSchema;
