@@ -29,7 +29,7 @@ const expenseSchema = new Schema({
         type: Number,
         min: 1,
         max: 999999999999999,
-        required: [true, 'Price Info is requried']
+        required: [true, 'Purchase Amount is requried']
     }
 })
 
