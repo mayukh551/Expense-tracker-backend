@@ -8,7 +8,7 @@ const errorHandler = require('./Middleware/error-handler');
 const dayjs = require('dayjs')
 
 app.use(cors({
-    origin: 'https://expense-tracker-react-nine.vercel.app'
+    origin: '*'
 }));
 app.use(express.json()) // for parsing application/json
 app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
