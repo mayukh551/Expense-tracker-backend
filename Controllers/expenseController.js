@@ -1,6 +1,37 @@
 const CrudError = require('../Error/CrudError.js');
 const verifyUser = require('../Middleware/verify-user');
 const User = require('../Models/user.model');
+const { findHighestExpense } = require('../Controllers/AnalyticsController');
+const { findYearWithHighLowExpense } = require('../Controllers/AnalyticsController');
+
+/* Analytics */
+
+exports.fetchAnalytics = async (req, res, next) => {
+    const decoded = verifyUser(req, next);
+    const email = decoded.email;
+    const { expenses } = await User.findOne({ email: email }, 'expenses -_id');
+    if (expenses) {
+        const maxExpense = findHighestExpense(itemList);
+        const { year_most_spent, year_least_spent } = findYearWithHighLowExpense(itemList);
+
+        res.status(200).json({
+            status: success,
+            data: {
+                maxExpense,
+                year_most_spent,
+                year_least_spent
+            }
+        })
+    }
+
+    else {
+        res.status(200).json({})
+    }
+    // console.log(itemList);
+}
+
+
+/* CRUD Operations */
 
 exports.fetchAllExpenses = async (req, res, next) => {
     const decoded = verifyUser(req, next);

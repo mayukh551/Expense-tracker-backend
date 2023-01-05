@@ -1,15 +1,22 @@
 const express = require('express');
 const router = express.Router();
-const statRouter = require('./expense.stat.router');
+const statRouter = require('./analytics.router');
 const asyncWrap = require('../Middleware/async-wrapper');
 
 const expenseController = require('../Controllers/expenseController');
-
-const { fetchAllExpenses, addNewExpense, updateExpense, deleteExpense } = expenseController;
+const {
+    fetchAnalytics,
+    fetchAllExpenses,
+    addNewExpense,
+    updateExpense,
+    deleteExpense
+} = expenseController;
 
 
 // FETCH ALL EXPENSES
 router.route('/').get(asyncWrap(fetchAllExpenses, 'Fetch all expenses'))
+
+router.route('/profile').get(asyncWrap(fetchAnalytics, 'Fetch Analytics'))
 
 // ADD NEW EXPENSE
 router.route('/new').post(asyncWrap(addNewExpense, "New Expense Added"));
