@@ -34,7 +34,7 @@ const register = async (req, res, next) => {
     const token = jwt.sign({
         name: name,
         email: email
-    }, privateKey)
+    }, privateKey, { expiresIn: '1h' })
 
     res.status(200).json({ isSuccess: true, token: token })
 }
