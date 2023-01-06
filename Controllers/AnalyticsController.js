@@ -1,11 +1,24 @@
 // Fing Highest Expense/purchase till date
 const findHighestExpense = (itemList) => {
     var maxPrice = 0;
+    var itemName = "";
+    var year = '';
     itemList.forEach(item => {
-        maxPrice = Math.max(maxPrice, item.amount);
+        // maxPrice = Math.max(maxPrice, item.amount);
+        if (item.amount > maxPrice) {
+            maxPrice = item.amount;
+            itemName = item.title;
+            year = item.date.slice(0, 4);
+        }
     })
 
-    return maxPrice;
+    console.log(itemName, year, maxPrice);
+
+    return {
+        maxPrice,
+        itemName,
+        year
+    };
 }
 
 // to get which year is most spent and the amount

@@ -7,15 +7,16 @@ const { findYearWithHighLowExpense } = require('../Controllers/AnalyticsControll
 /* Analytics */
 
 exports.fetchAnalytics = async (req, res, next) => {
+    console.log('in fetchAnalytics');
     const decoded = verifyUser(req, next);
     const email = decoded.email;
     const { expenses } = await User.findOne({ email: email }, 'expenses -_id');
     if (expenses) {
-        const maxExpense = findHighestExpense(itemList);
-        const { year_most_spent, year_least_spent } = findYearWithHighLowExpense(itemList);
+        const maxExpense = findHighestExpense(expenses);
+        const { year_most_spent, year_least_spent } = findYearWithHighLowExpense(expenses);
 
         res.status(200).json({
-            status: success,
+            success: true,
             data: {
                 maxExpense,
                 year_most_spent,

@@ -1,8 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const statRouter = require('./analytics.router');
 const asyncWrap = require('../Middleware/async-wrapper');
-
 const expenseController = require('../Controllers/expenseController');
 const {
     fetchAnalytics,
@@ -26,8 +24,6 @@ router.route('/delete/:id').delete(asyncWrap(deleteExpense, "Expense Deleted"));
 
 // UPDATE AN EXPENSE
 router.route('/update/:id').put(asyncWrap(updateExpense, "Expense Updated"));
-
-router.use('/stats', statRouter)
 
 router.route('*').get((req, res) => {
     console.log('Invalid URL');
