@@ -9,10 +9,15 @@ const stringTypeFields = {
 }
 
 const expenseSchema = new Schema({
-    id: {
+    productId: {
         type: String,
         required: [true, 'Every item should have a unique id'],
         unique: true
+    },
+
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true
     },
 
     date: {
@@ -33,4 +38,6 @@ const expenseSchema = new Schema({
     }
 })
 
-module.exports = expenseSchema;
+const Expense = mongoose.model('Expense', expenseSchema);
+
+module.exports = Expense;

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const expenseSchema = require('./expense.model');
+const Expense = require('./expense.model');
 
 const stringTypeFields = {
     type: String,
@@ -32,9 +32,10 @@ const userSchema = new Schema({
         maxLength: 1000000,
         required: [true, 'Password is compulsory'],
     },
-    expenses: {
-        type: [expenseSchema]
-    }
+    expenses: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Expense'
+    }]
 })
 
 const User = mongoose.model('User', userSchema);
