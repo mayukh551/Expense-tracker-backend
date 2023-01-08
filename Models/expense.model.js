@@ -9,7 +9,7 @@ const stringTypeFields = {
 }
 
 const expenseSchema = new Schema({
-    productId: {
+    id: {
         type: String,
         required: [true, 'Every item should have a unique id'],
         unique: true
