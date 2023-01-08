@@ -11,7 +11,9 @@ exports.fetchAnalytics = async (req, res, next) => {
     console.log('in fetchAnalytics');
     const decoded = verifyUser(req, next);
     const email = decoded.email;
-    const { expenses } = await User.findOne({ email: email }, 'expenses -_id');
+    const { expenses } = await User
+        .findOne({ email: email })
+        .populate('expenses')
     if (expenses) {
         const maxExpense = findHighestExpense(expenses);
         const { year_most_spent, year_least_spent } = findYearWithHighLowExpense(expenses);
