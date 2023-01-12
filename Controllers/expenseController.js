@@ -2,8 +2,8 @@ const CrudError = require('../Error/CrudError.js');
 const verifyUser = require('../Middleware/verify-user');
 const User = require('../Models/user.model');
 const Expense = require('../Models/expense.model');
-const { findHighestExpense } = require('../Controllers/AnalyticsController');
-const { findYearWithHighLowExpense } = require('../Controllers/AnalyticsController');
+const { getYearAnalytics, getMonthAnalytics } = require('../Controllers/AnalyticsController');
+
 
 /* Analytics */
 
@@ -14,22 +14,44 @@ exports.fetchAnalytics = async (req, res, next) => {
     const { expenses } = await User
         .findOne({ email: email })
         .populate('expenses')
+    console.log(expenses);
     if (expenses) {
-        const maxExpense = findHighestExpense(expenses);
-        const { year_most_spent, year_least_spent } = findYearWithHighLowExpense(expenses);
+        console.log('expenses not empty');
+        const year = String(new Date().getFullYear());
+        const {
+            totalPurchaseAmount,
+            totalItems,
+            highestExpense,
+            lowestExpense
+        } = getYearAnalytics(year, expenses);
+
+        const {
+            highExpenseMonthDetails,
+            lowExpenseMonthDetails
+        } = getMonthAnalytics(year, expenses);
 
         res.status(200).json({
             success: true,
             data: {
-                maxExpense,
-                year_most_spent,
-                year_least_spent
+                year_stats: {
+                    totalPurchaseAmount,
+                    totalItems,
+                    highestExpense,
+                    lowestExpense
+                },
+                month_stats: {
+                    highExpenseMonthDetails,
+                    lowExpenseMonthDetails
+                }
             }
         })
     }
 
     else {
-        res.status(200).json({})
+        res.status(200).json({
+            success: true,
+            data: null
+        })
     }
 }
 
