@@ -101,7 +101,7 @@ exports.addNewExpense = async (req, res, next) => {
         if (err)
             new CrudError('DB_ERROR');
         else {
-            user.expenses.push(expense);
+            user.expenses.unshift(expense);
             await user.save();
             res.status(200).json(expense);
         }
