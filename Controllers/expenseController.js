@@ -69,7 +69,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     const expenses = user.expenses;
     if (expenses) {
-        res.json(expenses);
+        res.status(200).json(expenses);
     }
     else {
         throw new CrudError('DB_ERROR');

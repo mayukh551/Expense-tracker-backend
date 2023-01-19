@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "jest && nodemon index.js",
+    "dev": "nodemon index.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -15,8 +17,13 @@
     "dayjs": "^1.11.7",
     "dotenv": "^16.0.3",
     "express": "^4.18.1",
+    "jest": "^29.3.1",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.4",
     "nodemon": "^2.0.19"
+  },
+  "devDependencies": {
+    "superagent": "^8.0.8",
+    "supertest": "^6.3.3"
   }
 }
