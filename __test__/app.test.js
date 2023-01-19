@@ -22,7 +22,7 @@ describe('Root Test', () => {
 describe('CRUD Test', () => {
     require('dotenv').config({ path: '../.env' })
     // get expenses
-    describe('GET REQEUST', () => {
+    describe('GET/', () => {
         test('Return an array of expenses and status should be 200', async () => {
             const response = await request(app)
                 .get('/expenses/')
@@ -34,7 +34,7 @@ describe('CRUD Test', () => {
         });
     })
 
-    describe('POST REQUEST', () => {
+    describe('POST/', () => {
         test('Return new added expenses and status should be 200', async () => {
             const response = await request(app)
                 .post('/expenses/new/').set({ 'x-access-token': `${process.env.TOKEN}` })
@@ -49,7 +49,7 @@ describe('CRUD Test', () => {
         })
     })
 
-    describe('PUT REQUEST', () => {
+    describe('PUT/', () => {
         test('Return updated expense and Status should be 200', async () => {
             const response = await request(app)
                 .put('/expenses/update/test-123/').set({ 'x-access-token': `${process.env.TOKEN}` })
@@ -64,7 +64,7 @@ describe('CRUD Test', () => {
         })
     })
 
-    describe('DEL REQUEST', () => {
+    describe('DEL/', () => {
         test('Return Deleted expense and Status should be 200', async () => {
             const response = await request(app)
                 .delete('/expenses/delete/test-123/').set({ 'x-access-token': `${process.env.TOKEN}` })
@@ -72,4 +72,10 @@ describe('CRUD Test', () => {
             expect(typeof response.body).toEqual('object');
         })
     })
+
+    // describe('AUTH Test', () => {
+    //     test('Login - should return token string and a boolean isSuccess', async () => {
+    //         const response = await request(app).get('/auth/login/')
+    //     })
+    // })
 })
