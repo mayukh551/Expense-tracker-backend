@@ -14,12 +14,12 @@ describe('AUTH Test', () => {
     test('Login - should return token string and a success boolean', async () => {
         const response = await request(app)
             .post('/auth/login/')
-            .send({ 
+            .send({
                 email: 'mactavish171@gmail.com',
                 password: '123456'
             })
         expect(response.status).toBe(200);
         expect(response.body.isSuccess).toBeTruthy();
-        expect(typeof response.body.token).toBe("string");
+        expect(typeof response.body.token).toBe("string");  
     })
 })
