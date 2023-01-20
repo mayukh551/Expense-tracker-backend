@@ -2,7 +2,6 @@ const request = require("supertest");
 const { app, url, connectionParams } = require("../app");
 const mongoose = require("mongoose");
 var token = '';
-console.log('token in crud.test.js', token);
 
 beforeAll(async () => {
     await mongoose.connect(url, connectionParams);
