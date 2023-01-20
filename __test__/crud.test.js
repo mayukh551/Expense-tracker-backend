@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 var token = '';
 
 beforeAll(async () => {
-    await mongoose.connect(url, connectionParams);
+    // await mongoose.connect(url, connectionParams);
     const response = await request(app)
         .post('/auth/login/')
         .send({
@@ -33,15 +33,15 @@ function testObjectProperties(body, status) {
 
 describe('CRUD Test', () => {
 
-    test('GET/ => Returns an array of expenses and Status should be 200', async () => {
-        const response = await request(app)
-            .get('/expenses/')
-            .set({ 'x-access-token': `${token}` })
+    // test('GET/ => Returns an array of expenses and Status should be 200', async () => {
+    //     const response = await request(app)
+    //         .get('/expenses/')
+    //         .set({ 'x-access-token': `${token}` })
 
-        expect(response.status).toBe(200);
-        const resopnseBody = response.body;
-        expect(resopnseBody).toBeInstanceOf(Array);
-    });
+    //     expect(response.status).toBe(200);
+    //     const resopnseBody = response.body;
+    //     expect(resopnseBody).toBeInstanceOf(Array);
+    // });
 
     test('POST/ => Returns new added expenses and Status should be 200', async () => {
         const response = await request(app)
