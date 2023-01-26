@@ -14,8 +14,6 @@ const {
 // FETCH ALL EXPENSES
 router.route('/').get(asyncWrap(fetchAllExpenses, 'Fetch all expenses'))
 
-router.route('/profile').get(asyncWrap(fetchAnalytics, 'Fetch Analytics'))
-
 // ADD NEW EXPENSE
 router.route('/new').post(asyncWrap(addNewExpense, "New Expense Added"));
 
