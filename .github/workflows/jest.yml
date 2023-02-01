@@ -1,0 +1,30 @@
+name: Jest Tests
+
+on: push
+
+env:
+  PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}
+  DB_URL: ${{ secrets.DB_URL }}
+
+jobs:
+  jest-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Node.js Setup
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      - name: Set environment variables
+        run: |
+          echo "::set-env name=PRIVATE_KEY::$PRIVATE_KEY"
+          echo "::set-env name=DB_URL::$DB_URL"
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
