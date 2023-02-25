@@ -8,8 +8,8 @@ const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
 
 fetchAnalytics = async (req, res, next) => {
     console.log('in fetchAnalytics');
-    const decoded = verifyUser(req, next);
-    const email = decoded.email;
+    // const decoded = verifyUser(req, next);
+    const email = req['user-email'];
     const { expenses } = await User
         .findOne({ email: email })
         .populate('expenses')
@@ -51,8 +51,8 @@ fetchAnalytics = async (req, res, next) => {
 
 
 const getYearhChartData = async (req, res, next) => {
-    const decoded = verifyUser(req, next);
-    const email = decoded.email;
+    // const decoded = verifyUser(req, next);
+    const email = req['user-email'];
     const { expenses } = await User
         .findOne({ email: email })
         .populate('expenses');
@@ -95,8 +95,8 @@ const getYearhChartData = async (req, res, next) => {
 
 
 const getMonthChartData = async (req, res, next) => {
-    const decoded = verifyUser(req, next);
-    const email = decoded.email;
+    // const decoded = verifyUser(req, next);
+    const email = req['user-email'];
     const { expenses } = await User
         .findOne({ email: email })
         .populate('expenses');

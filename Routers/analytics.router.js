@@ -1,17 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const asyncWrap = require('../Middleware/async-wrapper');
+const verifyUser = require('../Middleware/verify-user');
 const {
     fetchAnalytics,
     getYearhChartData,
     getMonthChartData
 } = require('../Controllers/AnalyticsController');
 
-router.route('/').get(asyncWrap(fetchAnalytics, 'Fetch Analytics'));
+router.route('/').get(verifyUser, asyncWrap(fetchAnalytics));
 
-router.route('/year/:year').get(asyncWrap(getYearhChartData, ''));
+router.route('/year/:year').get(verifyUser, asyncWrap(getYearhChartData));
 
-router.route('/month/:month/:year').get(asyncWrap(getMonthChartData, ''));
+router.route('/month/:month/:year').get(verifyUser, asyncWrap(getMonthChartData));
 
 router.route('*').get((req, res) => {
     console.log('Invalid URL');

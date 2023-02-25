@@ -1,5 +1,5 @@
 // try-catch wrapper function for controllers
-function asyncWrap(fn, msg) {
+function asyncWrap(fn) {
     return (req, res, next) => {
         fn(req, res, next)
             .catch(err => next(err))

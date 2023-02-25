@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const asyncWrap = require('../Middleware/async-wrapper');
 const expenseController = require('../Controllers/expenseController');
+const verifyUser = require('../Middleware/verify-user');
 const {
-    fetchAnalytics,
     fetchAllExpenses,
     addNewExpense,
     updateExpense,
@@ -12,16 +12,16 @@ const {
 
 
 // FETCH ALL EXPENSES
-router.route('/').get(asyncWrap(fetchAllExpenses, 'Fetch all expenses'))
+router.route('/').get(verifyUser, asyncWrap(fetchAllExpenses))
 
 // ADD NEW EXPENSE
-router.route('/new').post(asyncWrap(addNewExpense, "New Expense Added"));
+router.route('/new').post(verifyUser, asyncWrap(addNewExpense));
 
 // DELETE AN EXPENSE
-router.route('/delete/:id').delete(asyncWrap(deleteExpense, "Expense Deleted"));
+router.route('/delete/:id').delete(verifyUser, asyncWrap(deleteExpense));
 
 // UPDATE AN EXPENSE
-router.route('/update/:id').put(asyncWrap(updateExpense, "Expense Updated"));
+router.route('/update/:id').put(verifyUser, asyncWrap(updateExpense));
 
 router.route('*').get((req, res) => {
     console.log('Invalid URL');

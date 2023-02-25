@@ -9,8 +9,8 @@ const { getYearAnalytics, getMonthAnalytics } = require('../Controllers/Analytic
 
 exports.fetchAnalytics = async (req, res, next) => {
     console.log('in fetchAnalytics');
-    const decoded = verifyUser(req, next);
-    const email = decoded.email;
+    // const decoded = verifyUser(req, next);
+    const email = req['user-email']
     const { expenses } = await User
         .findOne({ email: email })
         .populate('expenses')
@@ -60,8 +60,8 @@ exports.fetchAnalytics = async (req, res, next) => {
 
 // fetch all expenses
 exports.fetchAllExpenses = async (req, res, next) => {
-    const decoded = verifyUser(req, next);
-    const email = decoded.email;
+    // const decoded = verifyUser(req, next);
+    const email = req['user-email']
 
     const user = await User
         .findOne({ email: email })
@@ -83,9 +83,9 @@ exports.addNewExpense = async (req, res, next) => {
     const userDate = req.body.date;
     const userLabel = req.body.title;
     const userPrice = req.body.amount;
-    const decoded = verifyUser(req, next);
+    // const decoded = verifyUser(req, next);
 
-    const email = decoded.email;
+    const email = req['user-email'];
 
     const user = await User.findOne({ email: email });
 
