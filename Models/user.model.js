@@ -31,11 +31,11 @@ const userSchema = new Schema({
         minLength: 6,
         maxLength: 1000000,
         required: [true, 'Password is compulsory'],
-    },
-    expenses: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Expense'
-    }]
+    }
+    // expenses: [{
+    //     type: Schema.Types.ObjectId,
+    //     ref: 'Expense'
+    // }]
 })
 
 const User = mongoose.model('User', userSchema);

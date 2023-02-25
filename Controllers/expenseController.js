@@ -1,60 +1,6 @@
 const CrudError = require('../Error/CrudError.js');
-const verifyUser = require('../Middleware/verify-user');
 const User = require('../Models/user.model');
 const Expense = require('../Models/expense.model');
-const { getYearAnalytics, getMonthAnalytics } = require('../Controllers/AnalyticsController');
-
-
-/* Analytics */
-
-exports.fetchAnalytics = async (req, res, next) => {
-    console.log('in fetchAnalytics');
-    // const decoded = verifyUser(req, next);
-    const email = req['user-email']
-    const { expenses } = await User
-        .findOne({ email: email })
-        .populate('expenses')
-    console.log(expenses);
-    if (expenses) {
-        console.log('expenses not empty');
-        const year = String(new Date().getFullYear());
-        const {
-            totalPurchaseAmount,
-            totalItems,
-            highestExpense,
-            lowestExpense
-        } = getYearAnalytics(year, expenses);
-
-        const {
-            highExpenseMonthDetails,
-            lowExpenseMonthDetails
-        } = getMonthAnalytics(year, expenses);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                year_stats: {
-                    totalPurchaseAmount,
-                    totalItems,
-                    highestExpense,
-                    lowestExpense
-                },
-                month_stats: {
-                    highExpenseMonthDetails,
-                    lowExpenseMonthDetails
-                }
-            }
-        })
-    }
-
-    else {
-        res.status(200).json({
-            success: true,
-            data: null
-        })
-    }
-}
-
 
 /* CRUD Operations */
 
@@ -63,11 +9,9 @@ exports.fetchAllExpenses = async (req, res, next) => {
     // const decoded = verifyUser(req, next);
     const email = req['user-email']
 
-    const user = await User
-        .findOne({ email: email })
-        .populate('expenses')
+    const user = await User.findOne({ email: email });
 
-    const expenses = user.expenses;
+    const expenses = await Expense.find({ userId: user._id });
     if (expenses) {
         res.status(200).json(expenses);
     }
