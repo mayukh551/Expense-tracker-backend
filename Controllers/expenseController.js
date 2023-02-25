@@ -44,11 +44,8 @@ exports.addNewExpense = async (req, res, next) => {
     expense.save(async (err) => {
         if (err)
             new CrudError('DB_ERROR');
-        else {
-            user.expenses.unshift(expense);
-            await user.save();
+        else
             res.status(200).json(expense);
-        }
     });
 }
 
@@ -61,10 +58,8 @@ exports.updateExpense = async (req, res, next) => {
     if (!updatedExpense)
         throw new Error('INVALID_ID');
     updatedExpense.save((err) => {
-        if (err)
-            throw new CrudError('DB_ERROR');
-        else
-            res.status(200).json(updatedExpense);
+        if (err) throw new CrudError('DB_ERROR');
+        else res.status(200).json(updatedExpense);
     });
 }
 
@@ -74,10 +69,7 @@ exports.deleteExpense = async (req, res, next) => {
     console.log('in update', id, req.body);
 
     const deletedExpense = await Expense.findOneAndDelete({ id: id }, { new: true });
-    if (!deletedExpense)
-        throw new Error('INVALID_ID');
 
-    else {
-        res.status(200).json(deletedExpense);
-    }
+    if (!deletedExpense) throw new Error('INVALID_ID');
+    else res.status(200).json(deletedExpense);
 }
