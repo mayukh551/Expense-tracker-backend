@@ -1,6 +1,7 @@
 const { getYearAnalytics, getMonthAnalytics, noDataResponse } = require('../utils/analyticsHelper');
 const User = require('../Models/user.model.js');
 const verifyUser = require('../Middleware/verify-user');
+const Expenses = require('../Models/expense.model')
 
 const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -10,9 +11,8 @@ fetchAnalytics = async (req, res, next) => {
     console.log('in fetchAnalytics');
     // const decoded = verifyUser(req, next);
     const email = req['user-email'];
-    const { expenses } = await User
-        .findOne({ email: email })
-        .populate('expenses')
+    const user = await User.findOne({ email: email });
+    const expenses = await Expenses.find({ userId: user._id });
 
     if (expenses) {
         const year = String(new Date().getFullYear());
@@ -53,9 +53,8 @@ fetchAnalytics = async (req, res, next) => {
 const getYearhChartData = async (req, res, next) => {
     // const decoded = verifyUser(req, next);
     const email = req['user-email'];
-    const { expenses } = await User
-        .findOne({ email: email })
-        .populate('expenses');
+    const user = await User.findOne({ email: email });
+    const expenses = await Expenses.find({ userId: user._id });
 
     const { year } = req.params;
 
@@ -97,9 +96,8 @@ const getYearhChartData = async (req, res, next) => {
 const getMonthChartData = async (req, res, next) => {
     // const decoded = verifyUser(req, next);
     const email = req['user-email'];
-    const { expenses } = await User
-        .findOne({ email: email })
-        .populate('expenses');
+    const user = await User.findOne({ email: email });
+    const expenses = await Expenses.find({ userId: user._id });
 
     // extracting params from req object    
     const { year } = req.params;
