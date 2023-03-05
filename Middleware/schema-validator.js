@@ -13,6 +13,8 @@ function validateExpenseSchema(req, res, next) {
         id: Joi.string().required().trim(),
         userId: JoiObjectId,
         date: Joi.string().required().trim().min(10).max(10),
+        month: Joi.string().required().trim().min(3).max(3),
+        year: Joi.string().required().trim().min(4).max(4),
         title: Joi.string().required().trim().min(1).max(40),
         amount: Joi.number().required().min(1).max(999999999999999)
     })

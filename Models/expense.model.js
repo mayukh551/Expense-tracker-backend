@@ -25,9 +25,29 @@ const expenseSchema = new Schema({
         required: [true, 'Date is compulsory']
     },
 
+    month: {
+        type: String,
+        required: [true, 'month is compulsory'],
+        enum: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    },
+
+    year: {
+        type: String,
+        required: [true, 'Year is compulsory'],
+        minLength: 4,
+        maxLength: 4
+    },
+
     title: {
         ...stringTypeFields,
         required: [true, 'item title is compulsory']
+    },
+
+    quantity: {
+        type: Number,
+        required: [true, 'quantity is compulsory'],
+        min: 1,
+        max: 999999999999999,
     },
 
     amount: {
