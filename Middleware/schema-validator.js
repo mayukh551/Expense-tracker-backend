@@ -1,10 +1,10 @@
 const Joi = require('joi');
 const JoiObjectId = require('joi-objectid')(Joi);
-// const CrudError = require('../Error/CrudError');
+const CrudError = require('../Error/CrudError');
 
 function validateSchema(schema, body, next) {
     const { error } = schema.validate(body);
-    if (error) next(error);
+    if (error) next(new CrudError('VALIDATION_ERROR', error.details[0].message));
     else next();
 }
 

@@ -16,7 +16,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
         res.status(200).json(expenses);
     }
     else {
-        throw new CrudError('DB_ERROR');
+        throw new CrudError('DB_ERROR', 'Failed to load expenses. Try again later.');
     }
 }
 
@@ -43,7 +43,7 @@ exports.addNewExpense = async (req, res, next) => {
 
     expense.save(async (err) => {
         if (err)
-            new CrudError('DB_ERROR');
+            new CrudError('DB_ERROR', 'Failed to save new Expense!');
         else
             res.status(200).json(expense);
     });
