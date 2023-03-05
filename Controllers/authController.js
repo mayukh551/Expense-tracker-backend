@@ -8,11 +8,7 @@ const register = async (req, res, next) => {
     console.log('in register');
     console.log(req.body);
     const { name, email, password } = req.body;
-
-    if (!name || !email || !password) {
-        next(new AuthError('Missing Fields'));
-    }
-
+    
     // To check if account already exists with the same email
     if (email) {
         const user = await User.findOne({ email: email });
