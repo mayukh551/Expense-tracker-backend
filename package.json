@@ -22,7 +22,8 @@
     "joi-objectid": "^4.0.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.5.4",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "redis": "^4.6.5"
   },
   "devDependencies": {
     "superagent": "^8.0.8",
