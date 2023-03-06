@@ -14,7 +14,10 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     const { month, year } = req.query;
 
-    const expenses = await Expense.find({ userId: user._id, month, year });
+    const expenses = await Expense.find(
+        { userId: user._id, month, year },
+        { _id: 0, id: 1, title: 1, amount: 1, date: 1, userId: 1, quantity: 1 } // 0 -> excludes, 1 -> includes
+    );
 
     if (expenses) res.status(200).json(expenses);
     else throw new CrudError('DB_ERROR', 'Failed to load expenses. Try again later.');
