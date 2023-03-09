@@ -22,7 +22,6 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
 // add new expense
 exports.addNewExpense = async (req, res, next) => {
-    console.log(req.body);
     const productId = req.body.id;
     const userDate = req.body.date;
     const userLabel = req.body.title;
@@ -52,7 +51,6 @@ exports.addNewExpense = async (req, res, next) => {
 // update an existing expense
 exports.updateExpense = async (req, res, next) => {
     const { id } = req.params;
-    console.log('in update', id, req.body);
 
     const updatedExpense = await Expense.findOneAndUpdate({ id: id }, req.body, { new: true });
     if (!updatedExpense)
@@ -66,7 +64,6 @@ exports.updateExpense = async (req, res, next) => {
 // delete an expense
 exports.deleteExpense = async (req, res, next) => {
     const { id } = req.params;
-    console.log('in update', id, req.body);
 
     const deletedExpense = await Expense.findOneAndDelete({ id: id }, { new: true });
 
