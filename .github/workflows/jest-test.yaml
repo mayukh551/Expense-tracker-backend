@@ -4,13 +4,13 @@ on:
   - push
   - pull_request
 
+env:
+  PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
+  DB_URL: ${{secrets.DB_URL}}
+
 jobs:
   app-test:
     runs-on: ubuntu-latest
-
-    env:
-      PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
-      DB_URL: ${{secrets.DB_URL}}
 
     steps:
       - uses: actions/checkout@v3
@@ -26,10 +26,6 @@ jobs:
   
   auth-test:
     runs-on: ubuntu-latest
-
-    env:
-      PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
-      DB_URL: ${{secrets.DB_URL}}
 
     steps:
       - uses: actions/checkout@v3

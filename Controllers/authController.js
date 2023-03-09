@@ -5,8 +5,6 @@ const AuthError = require('../Error/AuthError');
 
 
 const register = async (req, res, next) => {
-    console.log('in register');
-    console.log(req.body);
     const { name, email, password } = req.body;
     
     // To check if account already exists with the same email
@@ -19,7 +17,6 @@ const register = async (req, res, next) => {
     // hashing password for storage in DB
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log(name, email, hashedPassword);
     const newUser = new User({
         name: name,
         email: email,
@@ -37,8 +34,6 @@ const register = async (req, res, next) => {
 }
 
 const login = async (req, res, next) => {
-    console.log('in login');
-    console.log(req.body);
 
     const user = await User.findOne({ email: req.body.email })
     // if user exists
@@ -49,13 +44,11 @@ const login = async (req, res, next) => {
         if (isValidPassword) {
             require("dotenv").config({ path: '../.env' });
             const privateKey = process.env.PRIVATE_KEY;
-            console.log(privateKey);
             // create token
             const token = jwt.sign({
                 name: user.name,
                 email: user.email
             }, privateKey)
-            console.log('token: ', token);
             res.status(200).json({ isSuccess: true, token: token })
         } else {
             throw new AuthError('Login failed!');
