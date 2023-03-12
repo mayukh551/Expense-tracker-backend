@@ -13,7 +13,7 @@ const {
 
 
 // FETCH ALL EXPENSES
-router.route('/').get(verifyUser, asyncWrap(fetchAllExpenses))
+router.route('/').get(verifyUser, asyncWrap(fetchAllExpenses));
 
 // ADD NEW EXPENSE
 router.route('/new').post(verifyUser, validateExpenseSchema, asyncWrap(addNewExpense));

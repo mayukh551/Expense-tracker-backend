@@ -1,4 +1,6 @@
 const CrudError = require('../Error/CrudError.js');
+
+// Model Imports
 const User = require('../Models/user.model');
 const Expense = require('../Models/expense.model');
 
@@ -6,25 +8,55 @@ const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
 
 /* CRUD Operations */
 
-// fetch all expenses
+/**
+ * @function fetchAllExpenses
+ * @description fetch all expenses from Expense Model
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next function
+ */
 exports.fetchAllExpenses = async (req, res, next) => {
     const email = req['user-email']
 
     const user = await User.findOne({ email: email });
 
-    const { month, year } = req.query;
+    // extracting queries for filter and sort values
+    const { month, year, sortBy: sortValue } = req.query;
 
-    const expenses = await Expense.find(
-        { userId: user._id, month, year },
-        { _id: 0, id: 1, title: 1, amount: 1, date: 1, userId: 1, quantity: 1 } // 0 -> excludes, 1 -> includes
-    );
+    const dateRegex = new RegExp('^' + year + '-' + month + '-');
+
+    // set expenses filter fields based on month/year/date
+    const eitherFields = [
+        { month: month }, { year: year }, { date: { $regex: dateRegex } }
+    ];
+
+    // selective fields in response from Expense Model
+    // 0 -> excludes, 1 -> includes
+    const selectedFields = { _id: 0, id: 1, title: 1, amount: 1, date: 1, userId: 1, quantity: 1 };
+
+    // fetch expenses based on available fields and sorted by user choice
+    const expenses = await Expense.find({
+        userId: user._id,
+        $or: eitherFields
+    },
+        selectedFields,
+    ).sort(sortValue);
 
     if (expenses) res.status(200).json(expenses);
     else throw new CrudError('DB_ERROR', 'Failed to load expenses. Try again later.');
 
 }
 
-// add new expense
+
+
+
+/**
+ * @function addNewExpense
+ * @description add new expense provided by user
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next function
+ */
 exports.addNewExpense = async (req, res, next) => {
     console.log(req.body);
     const productId = req.body.id;
@@ -36,7 +68,7 @@ exports.addNewExpense = async (req, res, next) => {
 
     const user = await User.findOne({ email: email });
 
-    const month = monthList[userDate.slice(5, 7)];
+    const month = monthList[parseInt(userDate.slice(5, 7)) - 1];
     const year = userDate.slice(0, 4);
 
     const expense = new Expense({
@@ -57,7 +89,16 @@ exports.addNewExpense = async (req, res, next) => {
     });
 }
 
-// update an existing expense
+
+
+
+/**
+ * @function updatedExpense
+ * @description update an existing expense found by its id
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next function
+ */
 exports.updateExpense = async (req, res, next) => {
     const { id } = req.params;
     console.log('in update', id, req.body);
@@ -71,7 +112,16 @@ exports.updateExpense = async (req, res, next) => {
     });
 }
 
-// delete an expense
+
+
+
+/**
+ * @function deletedExpense
+ * @description delete an existing expense found by its id
+ * @param {Object} req - The request object
+ * @param {Object} res - The response object
+ * @param {Function} next - The next function
+ */
 exports.deleteExpense = async (req, res, next) => {
     const { id } = req.params;
     console.log('in update', id, req.body);

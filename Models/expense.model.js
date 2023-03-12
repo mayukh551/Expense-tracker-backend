@@ -27,13 +27,11 @@ const expenseSchema = new Schema({
 
     month: {
         type: String,
-        required: [true, 'month is compulsory'],
         enum: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     },
 
     year: {
         type: String,
-        required: [true, 'Year is compulsory'],
         minLength: 4,
         maxLength: 4
     },
