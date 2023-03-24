@@ -76,6 +76,6 @@ exports.deleteExpense = async (req, res, next) => {
 
     const deletedExpense = await Expense.findOneAndDelete({ id: id }, { new: true });
 
-    if (!deletedExpense) throw new Error(404, 'Item Not Found!', apiEndpoint);
+    if (!deletedExpense) throw new CrudError(404, 'Item Not Found!', apiEndpoint);
     else res.status(200).json(deletedExpense);
 }

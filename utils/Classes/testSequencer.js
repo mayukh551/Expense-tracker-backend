@@ -1,7 +1,7 @@
 const Sequencer = require('@jest/test-sequencer').default;
 
 // importing tests config
-const { testsOrder } = require('../config/testConfig');
+const { testsOrder } = require('../../config/testConfig');
 
 
 class CustomSequencer extends Sequencer {
@@ -21,14 +21,12 @@ class CustomSequencer extends Sequencer {
 
         for (const test of testsOrder) {
             for (const copyTest of copyTests) {
-                const index = copyTest.path.indexOf(target);
+                const index = copyTest.path.indexOf(test);
                 if (copyTest.path.slice(index) === test)
                     finalTestsOrder.push(copyTest);
             }
         }
 
-
-        // console.log(finalTestsOrder);
         return finalTestsOrder;
     }
 }

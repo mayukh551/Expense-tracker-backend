@@ -3,13 +3,15 @@ const { app, url, connectionParams } = require("../app");
 const mongoose = require("mongoose");
 var token = '';
 
+const { email, password } = require("../config/testConfig").loginCreds;
+
 beforeAll(async () => {
     await mongoose.connect(url, connectionParams);
     const response = await request(app)
         .post('/auth/login/')
         .send({
-            email: 'mactavish171@gmail.com',
-            password: '123456'
+            email,
+            password
         })
     token = response.body.token;
 });
@@ -75,4 +77,37 @@ describe('CRUD Test', () => {
         testObjectProperties(response.body, response.status);
     })
 
+})
+
+
+// * ------------------------------------ Invalid ID Test ---------------------------------------------
+
+describe('Invalid ID Test : sending request with invalid product id', () => {
+
+    test('Update Req with wrong Expense Item Id: Should throw 404 CrudError', async () => {
+
+        const response = await request(app)
+            .put('/expenses/update/wrong-id-500/').set({ 'x-access-token': `${token}` })
+            .send({
+                id: 'test-123',
+                title: 'test update title',
+                amount: 231,
+                date: '2022-02-19'
+            })
+
+        expect(response.status).toBe(404);
+        expect(response.body.error.name).toBe('CrudError');
+        expect(response.body.isSuccess).toBeFalsy();
+    })
+
+
+    test('DEL Req with wrong Expense Item Id: Should throw 404 CrudError', async () => {
+        const response = await request(app)
+            .delete('/expenses/delete/wrong-id-500/').set({ 'x-access-token': `${token}` })
+
+        console.log(response.body.error);
+        expect(response.status).toBe(404);
+        expect(response.body.error.name).toBe('CrudError');
+        expect(response.body.isSuccess).toBeFalsy();
+    })
 })
