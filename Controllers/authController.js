@@ -5,21 +5,20 @@ const AuthError = require('../Error/AuthError');
 
 
 const register = async (req, res, next) => {
-    console.log('in register');
-    console.log(req.body);
+
+    const apiEndpoint = req.originalUrl;
     const { name, email, password } = req.body;
-    
+
     // To check if account already exists with the same email
     if (email) {
         const user = await User.findOne({ email: email });
         if (user)
-            next(new AuthError('You already have an existing account. Log in!'));
+            next(new AuthError(401, 'You already have an existing account. Log in!', apiEndpoint));
     }
 
     // hashing password for storage in DB
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    console.log(name, email, hashedPassword);
     const newUser = new User({
         name: name,
         email: email,
@@ -37,9 +36,8 @@ const register = async (req, res, next) => {
 }
 
 const login = async (req, res, next) => {
-    console.log('in login');
-    console.log(req.body);
 
+    const apiEndpoint = req.originalUrl;
     const user = await User.findOne({ email: req.body.email })
     // if user exists
     if (user) {
@@ -49,22 +47,20 @@ const login = async (req, res, next) => {
         if (isValidPassword) {
             require("dotenv").config({ path: '../.env' });
             const privateKey = process.env.PRIVATE_KEY;
-            console.log(privateKey);
             // create token
             const token = jwt.sign({
                 name: user.name,
                 email: user.email
             }, privateKey)
-            console.log('token: ', token);
             res.status(200).json({ isSuccess: true, token: token })
         } else {
-            throw new AuthError('Login failed!');
+            throw new AuthError(401, 'Login failed!', apiEndpoint);
         }
     }
 
     // if user does not exist
     else {
-        throw new AuthError('You do not have an account. Sign Up!');
+        throw new AuthError(401, 'You do not have an account. Sign Up!', apiEndpoint);
     }
 
 }

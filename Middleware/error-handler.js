@@ -1,9 +1,8 @@
 const Joi = require('joi');
 
 function errorHandler(err, req, res, next) {
-    console.log("Error is", err);
-    const { status = 500, message = 'Server Error' } = err;
-    res.status(status).json({ error: err, isSuccess: false, message: message })
+    // console.log("Error is", err);
+    res.status(err.status).json({ error: err, isSuccess: false, message: err.message })
 }
 
 module.exports = errorHandler;

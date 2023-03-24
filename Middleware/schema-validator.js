@@ -1,10 +1,10 @@
 const Joi = require('joi');
 const JoiObjectId = require('joi-objectid')(Joi);
-const CrudError = require('../Error/CrudError');
+const ValidationError = require('../Error/ValidationError');
 
-function validateSchema(schema, body, next) {
-    const { error } = schema.validate(body);
-    if (error) next(new CrudError('VALIDATION_ERROR', error.details[0].message));
+function validateSchema(schema, req, next) {
+    const { error } = schema.validate(req.body);
+    if (error) next(new ValidationError(400, error.details[0].message, req.originalUrl));
     else next();
 }
 
@@ -19,16 +19,17 @@ function validateExpenseSchema(req, res, next) {
         amount: Joi.number().required().min(1).max(999999999999999)
     })
 
-    validateSchema(expenseSchema, req.body, next);
+    validateSchema(expenseSchema, req, next);
 }
 
 function validateUserLoginSchema(req, res, next) {
+
     const userLoginSchema = Joi.object({
         email: Joi.string().email().required().trim().min(1).max(40),
         password: Joi.string().required().trim().min(6).max(1000000),
     })
 
-    validateSchema(userLoginSchema, req.body, next);
+    validateSchema(userLoginSchema, req, next);
 }
 
 function validateUserRegisterSchema(req, res, next) {
@@ -38,7 +39,7 @@ function validateUserRegisterSchema(req, res, next) {
         password: Joi.string().required().trim().min(6).max(1000000),
     })
 
-    validateSchema(userRegisterSchema, req.body, next);
+    validateSchema(userRegisterSchema, req, next);
 }
 
 module.exports = {

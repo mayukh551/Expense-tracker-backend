@@ -1,0 +1,52 @@
+name: Test-Backend-App-Feat
+
+on:
+  - push
+  - pull_request
+
+env:
+  PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
+  DB_URL: ${{secrets.DB_URL}}
+
+jobs:
+  app-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Uses Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+      - name: Install Dependencies
+        run: npm install
+      - name: Test app.js
+        run: npm test app.test.js
+
+  auth-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Uses Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+      - name: Install Dependencies
+        run: npm install
+      - name: Test Auth Functins
+        run: npm test auth.test.js
+
+  crud-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Uses Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+      - name: Install Dependencies
+        run: npm install
+      - name: Test Crud Functions
+        run: npm test crud.test.js

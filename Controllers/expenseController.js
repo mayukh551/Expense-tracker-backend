@@ -16,6 +16,9 @@ const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
  * @param {Function} next - The next function
  */
 exports.fetchAllExpenses = async (req, res, next) => {
+
+    const apiEndpoint = req.originalUrl;
+
     const email = req['user-email']
 
     const user = await User.findOne({ email: email });
@@ -58,7 +61,9 @@ exports.fetchAllExpenses = async (req, res, next) => {
  * @param {Function} next - The next function
  */
 exports.addNewExpense = async (req, res, next) => {
-    console.log(req.body);
+
+    const apiEndpoint = req.originalUrl;
+
     const productId = req.body.id;
     const userDate = req.body.date;
     const userLabel = req.body.title;
@@ -83,7 +88,7 @@ exports.addNewExpense = async (req, res, next) => {
 
     expense.save(async (err) => {
         if (err)
-            new CrudError('DB_ERROR', 'Failed to save new Expense!');
+            new CrudError(500, 'Failed to save new Expense!', apiEndpoint);
         else
             res.status(200).json(expense);
     });
@@ -100,14 +105,15 @@ exports.addNewExpense = async (req, res, next) => {
  * @param {Function} next - The next function
  */
 exports.updateExpense = async (req, res, next) => {
+
+    const apiEndpoint = req.originalUrl;
     const { id } = req.params;
-    console.log('in update', id, req.body);
 
     const updatedExpense = await Expense.findOneAndUpdate({ id: id }, req.body, { new: true });
     if (!updatedExpense)
-        throw new Error('INVALID_ID');
+        throw new CrudError(404, 'Item Not Found!', apiEndpoint);
     updatedExpense.save((err) => {
-        if (err) throw new CrudError('DB_ERROR');
+        if (err) throw new CrudError(500, null, apiEndpoint);
         else res.status(200).json(updatedExpense);
     });
 }
@@ -123,11 +129,12 @@ exports.updateExpense = async (req, res, next) => {
  * @param {Function} next - The next function
  */
 exports.deleteExpense = async (req, res, next) => {
+
+    const apiEndpoint = req.originalUrl;
     const { id } = req.params;
-    console.log('in update', id, req.body);
 
     const deletedExpense = await Expense.findOneAndDelete({ id: id }, { new: true });
 
-    if (!deletedExpense) throw new Error('INVALID_ID');
+    if (!deletedExpense) throw new CrudError(404, 'Item Not Found!', apiEndpoint);
     else res.status(200).json(deletedExpense);
 }
