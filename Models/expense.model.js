@@ -33,7 +33,9 @@ const expenseSchema = new Schema({
     year: {
         type: String,
         minLength: 4,
-        maxLength: 4
+        maxLength: 4,
+        min: 2019,
+        max: 2050
     },
 
     title: {
@@ -43,7 +45,7 @@ const expenseSchema = new Schema({
 
     quantity: {
         type: Number,
-        required: [true, 'quantity is compulsory'],
+        // required: [true, 'quantity is compulsory'],
         min: 1,
         max: 999999999999999,
     },

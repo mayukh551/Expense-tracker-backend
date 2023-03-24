@@ -19,7 +19,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     const apiEndpoint = req.originalUrl;
 
-    const email = req['user-email']
+    const email = req['user-email'];
 
     const user = await User.findOne({ email: email });
 
@@ -35,7 +35,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     // selective fields in response from Expense Model
     // 0 -> excludes, 1 -> includes
-    const selectedFields = { _id: 0, id: 1, title: 1, amount: 1, date: 1, userId: 1, quantity: 1 };
+    const selectedFields = { _id: 0, id: 1, title: 1, amount: 1, date: 1, userId: 0, quantity: 1 };
 
     // fetch expenses based on available fields and sorted by user choice
     const expenses = await Expense.find({
@@ -46,7 +46,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
     ).sort(sortValue);
 
     if (expenses) res.status(200).json(expenses);
-    else throw new CrudError('DB_ERROR', 'Failed to load expenses. Try again later.');
+    else throw new CrudError(500, 'Failed to load expenses. Try again later.', apiEndpoint);
 
 }
 
