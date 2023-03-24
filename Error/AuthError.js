@@ -1,8 +1,9 @@
-class AuthError extends Error {
-    constructor(message) {
-        super();
-        this.message = message;
-        this.status = 401;
+const AppError = require("./AppError");
+
+class AuthError extends AppError {
+    constructor(status, message, apiEndpoint) {
+        super(status, message, apiEndpoint);
+        this.name = this.constructor.name;
     }
 }
 
