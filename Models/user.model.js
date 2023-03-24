@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
+const { validateEmail } = require('../utils/validator');
 const Schema = mongoose.Schema;
-const Expense = require('./expense.model');
 
 const stringTypeFields = {
     type: String,
@@ -19,9 +19,7 @@ const userSchema = new Schema({
         required: [true, 'Email id compulsory'],
         unique: true,
         validate: {
-            validator: (e) => {
-                return e.includes('@')
-            },
+            validator: validateEmail,
             message: "Invalid Email Id"
         },
         maxLength: 40,
