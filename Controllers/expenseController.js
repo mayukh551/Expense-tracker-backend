@@ -35,7 +35,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     // selective fields in response from Expense Model
     // 0 -> excludes, 1 -> includes
-    const selectedFields = { _id: 0, id: 1, title: 1, amount: 1, date: 1, userId: 0, quantity: 1 };
+    const selectedFields = { _id: 0, id: 1, title: 1, amount: 1, date: 1, userId: 1, quantity: 1 };
 
     // fetch expenses based on available fields and sorted by user choice
     const expenses = await Expense.find({
@@ -87,10 +87,8 @@ exports.addNewExpense = async (req, res, next) => {
     });
 
     expense.save(async (err) => {
-        if (err)
-            new CrudError(500, 'Failed to save new Expense!', apiEndpoint);
-        else
-            res.status(200).json(expense);
+        if (err) new CrudError(500, 'Failed to save new Expense!', apiEndpoint);
+        else res.status(200).json(expense);
     });
 }
 
