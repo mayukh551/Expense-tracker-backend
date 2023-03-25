@@ -121,14 +121,18 @@ const getMonthChartData = async (req, res, next) => {
         // adding up expenses for every day of a given month and year
         expenses.forEach(expense => {
             var monthNo = monthList.indexOf(month) + 1;
-            console.log(monthNo, parseInt(expense.date.slice(5, 7)), expense.date.slice(0, 4));
-            if (expense.date.slice(0, 4) === year && parseInt(expense.date.slice(5, 7)) === monthNo) {
-                const dayNo = parseInt(expense.date.slice(9));
-                console.log(dayNo);
+
+            // extracting year, month, day from date prop
+            var expenseYear = expense.date.slice(0, 4);
+            var expenseMonth = expense.date.slice(5, 7);
+            var expenseDay = expense.date.slice(8);
+
+            if (expenseYear === year && parseInt(expenseMonth) === monthNo) {
+                const dayNo = parseInt(expenseDay);
                 monthExpenseChart[dayNo] += parseInt(expense.amount);
             }
         })
-        console.log(monthExpenseChart);
+
         // filling up expenses of every day of the given month
         for (let day = 1; day <= totalDays; day++)
             monthChartData.push(monthExpenseChart[day]);
