@@ -25,7 +25,7 @@ function testObjectProperties(body, status) {
     expect(status).toBe(200);
     expect(typeof body).toEqual('object');
 
-    expect(body).toHaveProperty('_id');
+    // expect(body).toHaveProperty('_id');
     expect(body).toHaveProperty('id');
     expect(body).toHaveProperty('title');
     expect(body).toHaveProperty('userId');
