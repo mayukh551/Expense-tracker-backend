@@ -29,9 +29,9 @@ exports.fetchAllExpenses = async (req, res, next) => {
     const dateRegex = new RegExp('^' + year + '-' + month + '-');
 
     // set expenses filter fields based on month/year/date
-    const eitherFields = [
-        { month: month }, { year: year }, { date: { $regex: dateRegex } }
-    ];
+    // const eitherFields = [
+    //     { month: month }, { year: year }, { date: { $regex: dateRegex } }
+    // ];
 
     // selective fields in response from Expense Model
     // 0 -> excludes, 1 -> includes
@@ -40,7 +40,8 @@ exports.fetchAllExpenses = async (req, res, next) => {
     // fetch expenses based on available fields and sorted by user choice
     const expenses = await Expense.find({
         userId: user._id,
-        $or: eitherFields
+        date: { $regex: dateRegex }
+        // $or: eitherFields
     },
         selectedFields,
     ).sort(sortValue);
