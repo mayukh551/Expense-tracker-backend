@@ -24,29 +24,22 @@ exports.fetchAllExpenses = async (req, res, next) => {
     const user = await User.findOne({ email: email });
 
     // extracting queries for filter and sort values
-    const { month, year, sortBy: sortValue } = req.query;
+    const { month, year } = req.query;
 
     const dateRegex = new RegExp('^' + year + '-' + month + '-');
-
-    // set expenses filter fields based on month/year/date
-    // const eitherFields = [
-    //     { month: month }, { year: year }, { date: { $regex: dateRegex } }
-    // ];
-
-    // selective fields in response from Expense Model
-    // 0 -> excludes, 1 -> includes
-    const selectedFields = { _id: 0, id: 1, title: 1, amount: 1, date: 1, userId: 1, quantity: 1 };
 
     // fetch expenses based on available fields and sorted by user choice
     const expenses = await Expense.find({
         userId: user._id,
         date: { $regex: dateRegex }
-        // $or: eitherFields
-    },
-        selectedFields,
-    ).sort(sortValue);
+    })
+        .select('id title amount date userId quantity year month')
+        .sort({ date: 'asc' })
 
-    if (expenses) res.status(200).json(expenses);
+    if (expenses) {
+        expenses.reverse();
+        res.status(200).json(expenses);
+    }
     else throw new CrudError(500, 'Failed to load expenses. Try again later.', apiEndpoint);
 
 }
@@ -69,6 +62,7 @@ exports.addNewExpense = async (req, res, next) => {
     const userDate = req.body.date;
     const userLabel = req.body.title;
     const userPrice = req.body.amount;
+    const userQuantity = req.body.quantity;
 
     const email = req['user-email'];
 
@@ -84,7 +78,8 @@ exports.addNewExpense = async (req, res, next) => {
         month,
         year,
         title: userLabel,
-        amount: userPrice
+        amount: userPrice,
+        quantity: userQuantity
     });
 
     expense.save(async (err) => {

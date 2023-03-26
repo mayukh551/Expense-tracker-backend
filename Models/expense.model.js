@@ -46,8 +46,9 @@ const expenseSchema = new Schema({
     quantity: {
         type: Number,
         // required: [true, 'quantity is compulsory'],
+        default: 1,
         min: 1,
-        max: 999999999999999,
+        max: 1000000,
     },
 
     amount: {

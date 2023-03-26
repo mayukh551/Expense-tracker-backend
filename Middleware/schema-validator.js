@@ -16,7 +16,8 @@ function validateExpenseSchema(req, res, next) {
         month: Joi.string().trim().min(1).max(3),
         year: Joi.string().trim().min(4).max(4),
         title: Joi.string().required().trim().min(1).max(40),
-        amount: Joi.number().required().min(1).max(999999999999999)
+        amount: Joi.number().required().min(1).max(999999999999999),
+        quantity: Joi.number().min(1).max(100000)
     })
 
     validateSchema(expenseSchema, req, next);
