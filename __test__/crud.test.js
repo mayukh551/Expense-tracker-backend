@@ -25,12 +25,22 @@ function testObjectProperties(body, status) {
     expect(status).toBe(200);
     expect(typeof body).toEqual('object');
 
-    // expect(body).toHaveProperty('_id');
     expect(body).toHaveProperty('id');
     expect(body).toHaveProperty('title');
     expect(body).toHaveProperty('userId');
     expect(body).toHaveProperty('amount');
     expect(body).toHaveProperty('date');
+    expect(body).toHaveProperty('quantity');
+
+    const { id, title, userId, amount, date, quantity } = body;
+    expect(typeof id).toBe('string');
+    expect(id.length).toBeGreaterThan(1);
+
+    expect(typeof title).toBe('string');
+    expect(typeof userId).toBe('string');
+    expect(typeof amount).toBe('number');
+    expect(typeof date).toBe('string');
+    expect(quantity).toBeGreaterThanOrEqual(1);
 }
 
 describe('CRUD Test', () => {
