@@ -22,8 +22,11 @@ class AppError extends Error {
         this.description = statusCodes[status].description;
 
         // additional details for finding errors
-        this.apiEndpoint = apiEndpoint;
         this.timestamp = new Date().toISOString();
+
+        // should be treated as private variable.
+        // Do not access or modify this variable directly
+        this._apiEndpoint = apiEndpoint;
     }
 
     /* 
@@ -41,7 +44,7 @@ class AppError extends Error {
             status: this.status,
             message: this.message,
             timestamp: this.timestamp,
-            apiEndpoint: this.apiEndpoint,
+            apiEndpoint: this._apiEndpoint,
             description: this.description
         }
     }

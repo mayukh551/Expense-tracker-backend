@@ -6,7 +6,7 @@ const AuthError = require('../Error/AuthError');
 
 const register = async (req, res, next) => {
 
-    const apiEndpoint = req.originalUrl;
+    const apiEndpoint = req.method + '/ : ' + req.originalUrl;
     const { name, email, password } = req.body;
 
     // To check if account already exists with the same email
@@ -37,7 +37,7 @@ const register = async (req, res, next) => {
 
 const login = async (req, res, next) => {
 
-    const apiEndpoint = req.originalUrl;
+    const apiEndpoint = req.method + '/ : ' + req.originalUrl;
     const user = await User.findOne({ email: req.body.email })
     // if user exists
     if (user) {

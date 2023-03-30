@@ -17,7 +17,7 @@ const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
  */
 exports.fetchAllExpenses = async (req, res, next) => {
 
-    const apiEndpoint = req.originalUrl;
+    const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
     const email = req['user-email'];
 
@@ -56,7 +56,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
  */
 exports.addNewExpense = async (req, res, next) => {
 
-    const apiEndpoint = req.originalUrl;
+    const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
     const productId = req.body.id;
     const userDate = req.body.date;
@@ -100,7 +100,7 @@ exports.addNewExpense = async (req, res, next) => {
  */
 exports.updateExpense = async (req, res, next) => {
 
-    const apiEndpoint = req.originalUrl;
+    const apiEndpoint = req.method + '/ : ' + req.originalUrl;
     const { id } = req.params;
 
     const updatedExpense = await Expense.findOneAndUpdate({ id: id }, req.body, { new: true });
@@ -124,7 +124,7 @@ exports.updateExpense = async (req, res, next) => {
  */
 exports.deleteExpense = async (req, res, next) => {
 
-    const apiEndpoint = req.originalUrl;
+    const apiEndpoint = req.method + '/ : ' + req.originalUrl;
     const { id } = req.params;
 
     const deletedExpense = await Expense.findOneAndDelete({ id: id }, { new: true });
