@@ -13,7 +13,7 @@ const register = async (req, res, next) => {
     if (email) {
         const user = await User.findOne({ email: email });
         if (user)
-            next(new AuthError(401, 'You already have an existing account. Log in!', apiEndpoint));
+            throw new AuthError(401, 'You already have an existing account. Log in!', apiEndpoint);
     }
 
     // hashing password for storage in DB
