@@ -4,6 +4,7 @@ const asyncWrap = require('../Middleware/async-wrapper');
 const expenseController = require('../Controllers/expenseController');
 const verifyUser = require('../Middleware/verify-user');
 const { validateExpenseSchema } = require('../Middleware/schema-validator');
+const cacheData = require('../Middleware/cache-data');
 const {
     fetchAllExpenses,
     addNewExpense,
@@ -13,7 +14,7 @@ const {
 
 
 // FETCH ALL EXPENSES
-router.route('/').get(verifyUser, asyncWrap(fetchAllExpenses));
+router.route('/').get(verifyUser, cacheData, asyncWrap(fetchAllExpenses));
 
 // ADD NEW EXPENSE
 router.route('/new').post(verifyUser, validateExpenseSchema, asyncWrap(addNewExpense));

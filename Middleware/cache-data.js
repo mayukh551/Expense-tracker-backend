@@ -1,6 +1,25 @@
 // import redis client
-const { client } = require('../app');
+const redis = require('redis');
 const asyncWrap = require('./async-wrapper');
+const dotenv = require('dotenv').config({ path: '../.env' });
+// Redis Cloud Connection based on node environment
+
+const client = redis.createClient();
+// if (node_env === 'development') {
+//     const client = redis.createClient();
+// }
+
+// else {
+//     const client = createClient({
+//         url: process.env.REDIS_URL
+//     });
+// }
+// console.log(client);
+
+
+client.on('error', err => console.log('Redis Client Error', err));
+
+client.connect().then(() => console.log('Connected to Redis'));
 
 /**
  * Cache data middleware
@@ -12,15 +31,26 @@ const cacheData = asyncWrap(async (req, res, next) => {
     // Extract email from request object
     const email = req['user-email'];
 
+    const { month, year } = req.query;
+
+    // cache key format: email:expenses:month:year
+    // const cacheKey = `${email}:expenses:${month}:${year}`;
+    const cacheKey = `${email}:expenses`;
+
+
     try {
         // Attempt to retrieve cached data
-        const cachedData = client.get(email);
+        const cachedData = await client.get(cacheKey);
 
         // If data is cached
         if (cachedData) {
             console.log('using cached data');
             // Return cached data as response
             res.status(200).json(cachedData);
+        }
+        else {
+            console.log('data not cached');
+            next();
         }
 
     } catch (err) {

@@ -7,7 +7,7 @@ const authRouter = require('./Routers/auth.router');
 const analyticsRouter = require('./Routers/analytics.router');
 const errorHandler = require('./Middleware/error-handler');
 const dayjs = require('dayjs')
-const { createClient } = require('redis');
+const redis = require('redis');
 
 app.use(cors({
     origin: '*'
@@ -51,25 +51,26 @@ app.use(errorHandler);
 console.log(['development', 'test'].includes(process.env.NODE_ENV));
 const node_env = process.env.NODE_ENV;
 
-// Redis Cloud Connection based on node environment
+// // Redis Cloud Connection based on node environment
 
-const client = createClient();
-// if (node_env === 'development')
-
-
-// client = createClient({
-//     url: process.env.REDIS_URL
-// });
+// const client = redis.createClient();
+// // if (node_env === 'development')
 
 
-client.on('error', err => console.log('Redis Client Error', err));
+// // client = createClient({
+// //     url: process.env.REDIS_URL
+// // });
+// // console.log(client);
 
-client.connect().then(() => console.log('Connected to Redis'));
+
+// client.on('error', err => console.log('Redis Client Error', err));
+
+// client.connect().then(() => console.log('Connected to Redis'));
 
 
 module.exports = {
     app,
     url,
     connectionParams,
-    client
+    // client
 };

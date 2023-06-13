@@ -1,7 +1,7 @@
 const CrudError = require('../Error/CrudError.js');
 
 // import redis Client
-const { client } = require('../app');
+// const client = require('../app');
 
 // Model Imports
 const User = require('../Models/user.model');
@@ -31,7 +31,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
     if (!email) throw new CrudError(401, 'Invalid Email', apiEndpoint);
 
     // cache key format: email:expenses:month:year
-    const cacheKey = `${email}:expenses:${month}:${year}`;
+    // const cacheKey = `${email}:expenses:${month}:${year}`;
 
     // const cachedData = await client.get(cacheKey);
 
@@ -55,7 +55,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
         expenses.reverse();
 
         // cache expenses
-        await client.set(cacheKey, JSON.stringify(expenses));
+        // await client.set(cacheKey, JSON.stringify(expenses));
 
         // send response
         res.status(200).json(expenses);
