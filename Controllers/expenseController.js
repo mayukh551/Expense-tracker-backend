@@ -1,5 +1,8 @@
 const CrudError = require('../Error/CrudError.js');
 
+// import redis Client
+const { client } = require('../app');
+
 // Model Imports
 const User = require('../Models/user.model');
 const Expense = require('../Models/expense.model');
@@ -19,25 +22,42 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
+    // Extract email from request object
     const email = req['user-email'];
-
-    const user = await User.findOne({ email: email });
 
     // extracting queries for filter and sort values
     const { month, year } = req.query;
+
+    if (!email) throw new CrudError(401, 'Invalid Email', apiEndpoint);
+
+    // cache key format: email:expenses:month:year
+    const cacheKey = `${email}:expenses:${month}:${year}`;
+
+    // const cachedData = await client.get(cacheKey);
+
+    // if cached Data present
+    // if (cachedData)
+    //     return res.status(200).json(JSON.parse(cachedData));
+
+    const user = await User.findOne({ email: email });
 
     const dateRegex = new RegExp('^' + year + '-' + month + '-');
 
     // fetch expenses based on available fields and sorted by user choice
     const expenses = await Expense.find({
         userId: user._id,
-        date: { $regex: dateRegex }
+        $or: [{ date: { $regex: dateRegex } }, {}]
     })
         .select('id title amount date userId quantity year month')
         .sort({ date: 'asc' })
 
     if (expenses) {
         expenses.reverse();
+
+        // cache expenses
+        await client.set(cacheKey, JSON.stringify(expenses));
+
+        // send response
         res.status(200).json(expenses);
     }
     else throw new CrudError(500, 'Failed to load expenses. Try again later.', apiEndpoint);
