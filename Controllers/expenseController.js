@@ -55,7 +55,8 @@ exports.fetchAllExpenses = async (req, res, next) => {
         expenses.reverse();
 
         // cache expenses
-        // await client.set(cacheKey, JSON.stringify(expenses));
+        const client = req['redis-client'];
+        await client.set(cacheKey, JSON.stringify(expenses));
 
         // send response
         res.status(200).json(expenses);

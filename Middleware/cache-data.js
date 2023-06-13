@@ -50,6 +50,7 @@ const cacheData = asyncWrap(async (req, res, next) => {
         }
         else {
             console.log('data not cached');
+            req['redis-client'] = client;
             next();
         }
 
