@@ -30,23 +30,16 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     if (!email) throw new CrudError(401, 'Invalid Email', apiEndpoint);
 
-    // cache key format: email:expenses:month:year
-    // const cacheKey = `${email}:expenses:${month}:${year}`;
-
-    // const cachedData = await client.get(cacheKey);
-
-    // if cached Data present
-    // if (cachedData)
-    //     return res.status(200).json(JSON.parse(cachedData));
-
     const user = await User.findOne({ email: email });
 
-    const dateRegex = new RegExp('^' + year + '-' + month + '-');
+    const dateRegex = new RegExp('^' + year + '-' + month);
+
+    const monthName = monthList[parseInt(month) - 1]; // Ex: converting 03 => Mar
 
     // fetch expenses based on available fields and sorted by user choice
     const expenses = await Expense.find({
         userId: user._id,
-        $or: [{ date: { $regex: dateRegex } }, {}]
+        $or: [{ year, month: monthName }, { date: { $regex: dateRegex } }]
     })
         .select('id title amount date userId quantity year month')
         .sort({ date: 'asc' })
@@ -56,7 +49,9 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
         // cache expenses
         const client = req['redis-client'];
-        await client.set(cacheKey, JSON.stringify(expenses));
+        const cacheKey = `${email}:expenses:${month}:${year}`;
+        // key expiry after 30 minutes
+        await client.setEx(cacheKey, 1800, JSON.stringify(expenses));
 
         // send response
         res.status(200).json(expenses);
@@ -103,10 +98,15 @@ exports.addNewExpense = async (req, res, next) => {
         quantity: userQuantity
     });
 
-    expense.save(async (err) => {
-        if (err) new CrudError(500, 'Failed to save new Expense!', apiEndpoint);
-        else res.status(200).json(expense);
-    });
+    try {
+        await expense.save();        
+        // sending response
+        res.status(200).json(expense);
+        
+    } catch (err) {
+        console.log(err);
+        throw new CrudError(500, 'Failed to save new Expense!', apiEndpoint);
+    }
 }
 
 

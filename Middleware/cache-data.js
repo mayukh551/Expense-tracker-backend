@@ -1,6 +1,7 @@
 // import redis client
 const redis = require('redis');
 const asyncWrap = require('./async-wrapper');
+const CacheError = require('../Error/CacheError');
 const dotenv = require('dotenv').config({ path: '../.env' });
 // Redis Cloud Connection based on node environment
 
@@ -34,8 +35,8 @@ const cacheData = asyncWrap(async (req, res, next) => {
     const { month, year } = req.query;
 
     // cache key format: email:expenses:month:year
-    // const cacheKey = `${email}:expenses:${month}:${year}`;
-    const cacheKey = `${email}:expenses`;
+    const cacheKey = `${email}:expenses:${month}:${year}`;
+    // const cacheKey = `${email}:expenses`;
 
 
     try {
@@ -46,7 +47,7 @@ const cacheData = asyncWrap(async (req, res, next) => {
         if (cachedData) {
             console.log('using cached data');
             // Return cached data as response
-            res.status(200).json(cachedData);
+            res.status(200).json(JSON.parse(cachedData));
         }
         else {
             console.log('data not cached');
@@ -56,7 +57,7 @@ const cacheData = asyncWrap(async (req, res, next) => {
 
     } catch (err) {
         // Log any errors that occur
-        console.log(err);
+        throw new CacheError(500, err.message, null);
     }
 
 })
