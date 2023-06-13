@@ -37,29 +37,41 @@ const cacheData = asyncWrap(async (req, res, next) => {
     // cache key format: email:expenses:month:year
     const cacheKey = `${email}:expenses:${month}:${year}`;
     // const cacheKey = `${email}:expenses`;
+    req['redis-client'] = client;
+
+    //* For Requests: POST, PUT, DELETE
+    if (['PUT', 'DELETE', 'POST'].includes(req.method)) return next();
 
 
-    try {
-        // Attempt to retrieve cached data
-        const cachedData = await client.get(cacheKey);
+    //* For Requests: GET
+    var cachedData;
+    if (req.method === 'GET') {
+        try {
+            // Attempt to retrieve cached data
+            cachedData = await client.hGet(cacheKey, 'expenses');
 
-        // If data is cached
-        if (cachedData) {
-            console.log('using cached data');
-            // Return cached data as response
-            res.status(200).json(JSON.parse(cachedData));
-        }
-        else {
-            console.log('data not cached');
-            req['redis-client'] = client;
+            var needsUpdate = await client.hGet(cacheKey, 'updateExpenseCache');
+            needsUpdate = JSON.parse(needsUpdate);
+            console.log('Cache needs an update', needsUpdate);
+
+            // if cached data has to be updated or cache does not exist
+            if (needsUpdate == true || needsUpdate == null) return next();
+
+            //* If data is cached
+            if (cachedData) {
+                console.log('using cached data');
+                // Return cached data as response
+                return res.status(200).json(JSON.parse(cachedData));
+            }
+
+            //* Have to cache data or update cached data
+            else if (!cachedData) next();
+
+        } catch (err) {
+            console.log(err);
             next();
         }
-
-    } catch (err) {
-        // Log any errors that occur
-        throw new CacheError(500, err.message, null);
     }
-
 })
 
 

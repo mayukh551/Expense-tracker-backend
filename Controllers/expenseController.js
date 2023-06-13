@@ -2,6 +2,12 @@ const CrudError = require('../Error/CrudError.js');
 
 // import redis Client
 // const client = require('../app');
+async function updateCache(req) {
+    // set update expense cache to true
+    const client = req['redis-client'];
+    const cacheKey = `${email}:expenses:${userDate.slice(5, 7)}:${year}`;
+    await client.hSet(cacheKey, 'updateExpenseCache', 'true');
+}
 
 // Model Imports
 const User = require('../Models/user.model');
@@ -24,6 +30,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     // Extract email from request object
     const email = req['user-email'];
+    console.log(email);
 
     // extracting queries for filter and sort values
     const { month, year } = req.query;
@@ -50,8 +57,12 @@ exports.fetchAllExpenses = async (req, res, next) => {
         // cache expenses
         const client = req['redis-client'];
         const cacheKey = `${email}:expenses:${month}:${year}`;
+
         // key expiry after 30 minutes
-        await client.setEx(cacheKey, 1800, JSON.stringify(expenses));
+        // await client.setEx(cacheKey, 1800, JSON.stringify(expenses));
+        await client.hSet(cacheKey, 'expenses', JSON.stringify(expenses));
+        await client.hSet(cacheKey, 'updateExpenseCache', 'false');
+        await client.expire(cacheKey, 1800);
 
         // send response
         res.status(200).json(expenses);
@@ -99,10 +110,16 @@ exports.addNewExpense = async (req, res, next) => {
     });
 
     try {
-        await expense.save();        
+        await expense.save();
+
+        // set update expense cache to true
+        const client = req['redis-client'];
+        const cacheKey = `${email}:expenses:${userDate.slice(5, 7)}:${year}`;
+        await client.hSet(cacheKey, 'updateExpenseCache', 'true');
+
         // sending response
         res.status(200).json(expense);
-        
+
     } catch (err) {
         console.log(err);
         throw new CrudError(500, 'Failed to save new Expense!', apiEndpoint);
@@ -127,10 +144,30 @@ exports.updateExpense = async (req, res, next) => {
     const updatedExpense = await Expense.findOneAndUpdate({ id: id }, req.body, { new: true });
     if (!updatedExpense)
         throw new CrudError(404, 'Item Not Found!', apiEndpoint);
-    updatedExpense.save((err) => {
-        if (err) throw new CrudError(500, null, apiEndpoint);
-        else res.status(200).json(updatedExpense);
-    });
+
+    try {
+        await updatedExpense.save();
+
+        try {
+            // set update expense cache to true
+            const client = req['redis-client'];
+            const { email } = await User.findById(updatedExpense.userId);
+            const cacheKey = `${email}:expenses:${updatedExpense.date.slice(5, 7)}:${updatedExpense.date.slice(0, 4)}`;
+            console.log(cacheKey);
+            await client.hSet(cacheKey, 'updateExpenseCache', 'true');
+            console.log('Done updating after update')
+
+        } catch (error) {
+            console.log(error);
+        }
+
+        res.status(200).json(updatedExpense);
+    } catch (error) {
+        console.log(error);
+        throw new CrudError(500, null, apiEndpoint);
+    }
+
+
 }
 
 

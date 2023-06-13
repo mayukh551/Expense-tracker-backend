@@ -17,13 +17,14 @@ const {
 router.route('/').get(verifyUser, cacheData, asyncWrap(fetchAllExpenses));
 
 // ADD NEW EXPENSE
-router.route('/new').post(verifyUser, validateExpenseSchema, asyncWrap(addNewExpense));
+router.route('/new').post(verifyUser, validateExpenseSchema, cacheData, asyncWrap(addNewExpense));
 
 // DELETE AN EXPENSE
 router.route('/delete/:id').delete(verifyUser, asyncWrap(deleteExpense));
 
 // UPDATE AN EXPENSE
-router.route('/update/:id').put(verifyUser, validateExpenseSchema, asyncWrap(updateExpense));
+// router.route('/update/:id').put(verifyUser, validateExpenseSchema, cacheData, asyncWrap(updateExpense));
+router.route('/update/:id').put(verifyUser, cacheData, asyncWrap(updateExpense));
 
 router.route('*').get((req, res) => {
     console.log('Invalid URL');
