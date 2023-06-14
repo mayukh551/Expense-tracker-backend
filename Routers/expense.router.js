@@ -20,7 +20,7 @@ router.route('/').get(verifyUser, cacheData, asyncWrap(fetchAllExpenses));
 router.route('/new').post(verifyUser, validateExpenseSchema, cacheData, asyncWrap(addNewExpense));
 
 // DELETE AN EXPENSE
-router.route('/delete/:id').delete(verifyUser, asyncWrap(deleteExpense));
+router.route('/delete/:id').delete(verifyUser, cacheData, asyncWrap(deleteExpense));
 
 // UPDATE AN EXPENSE
 // router.route('/update/:id').put(verifyUser, validateExpenseSchema, cacheData, asyncWrap(updateExpense));

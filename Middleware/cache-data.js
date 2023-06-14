@@ -39,6 +39,8 @@ const cacheData = asyncWrap(async (req, res, next) => {
     // const cacheKey = `${email}:expenses`;
     req['redis-client'] = client;
 
+    console.log(req.method);
+
     //* For Requests: POST, PUT, DELETE
     if (['PUT', 'DELETE', 'POST'].includes(req.method)) return next();
 
