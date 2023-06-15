@@ -7,6 +7,8 @@ on:
 env:
   PRIVATE_KEY: ${{secrets.PRIVATE_KEY}}
   DB_URL: ${{secrets.DB_URL}}
+  REDIS_URL: ${{secrets.REDIS_URL}}
+  NODE_ENV: ${{secrets.NODE_ENV}}
 
 jobs:
   app-test:
