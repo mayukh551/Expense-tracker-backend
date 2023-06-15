@@ -1,14 +1,5 @@
 const CrudError = require('../Error/CrudError.js');
 
-// import redis Client
-// const client = require('../app');
-async function updateCache(req) {
-    // set update expense cache to true
-    const client = req['redis-client'];
-    const cacheKey = `${email}:expenses:${userDate.slice(5, 7)}:${year}`;
-    await client.hSet(cacheKey, 'updateExpenseCache', 'true');
-}
-
 // Model Imports
 const User = require('../Models/user.model');
 const Expense = require('../Models/expense.model');
@@ -25,7 +16,7 @@ const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
  * @param {Function} next - The next function
  */
 exports.fetchAllExpenses = async (req, res, next) => {
-
+    console.log('Fetch');
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
     // Extract email from request object
@@ -50,20 +41,20 @@ exports.fetchAllExpenses = async (req, res, next) => {
     })
         .select('id title amount date userId quantity year month')
         .sort({ date: 'asc' })
+    console.log(expenses);
 
     if (expenses) {
         expenses.reverse();
-
+        console.log(expenses.length);
         // cache expenses
         const client = req['redis-client'];
         const cacheKey = `${email}:expenses:${month}:${year}`;
 
-        // key expiry after 30 minutes
-        // await client.setEx(cacheKey, 1800, JSON.stringify(expenses));
         await client.hSet(cacheKey, 'expenses', JSON.stringify(expenses));
         await client.hSet(cacheKey, 'updateExpenseCache', 'false');
+        // key expiry after 30 minutes
         await client.expire(cacheKey, 1800);
-
+        console.log(expenses.length);
         // send response
         res.status(200).json(expenses);
     }

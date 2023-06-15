@@ -5,15 +5,7 @@ var token = '';
 
 const { email, password } = require("../config/testConfig").loginCreds;
 
-// create redis client
-// const redis = require('redis');
-// const client = redis.createClient();
-
 beforeAll(async () => {
-
-    // Connect to Redis
-    // client.on('error', err => console.log('Redis Client Error', err));
-    // client.connect().then(() => console.log('Connected to Redis'));
 
     // get access token
     const response = await request(app)
@@ -28,18 +20,8 @@ beforeAll(async () => {
 
 // close Mongoose and redis connection
 afterAll(async () => {
-
-    // delete all keys
-    try {
-        await client.flushAll();
-
-    } catch (error) {
-        console.log('Error deleting keys:', error);
-    }
-
     // close connections
     await mongoose.connection.close();
-    await client.quit();
 });
 
 /**

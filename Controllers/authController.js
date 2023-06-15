@@ -47,6 +47,7 @@ const login = async (req, res, next) => {
         if (isValidPassword) {
             require("dotenv").config({ path: '../.env' });
             const privateKey = process.env.PRIVATE_KEY;
+            console.log(privateKey);
             // create token
             const token = jwt.sign({
                 name: user.name,
