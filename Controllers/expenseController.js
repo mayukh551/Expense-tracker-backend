@@ -41,7 +41,6 @@ exports.fetchAllExpenses = async (req, res, next) => {
     })
         .select('id title amount date userId quantity year month')
         .sort({ date: 'asc' })
-    console.log(expenses);
 
     if (expenses) {
         expenses.reverse();
