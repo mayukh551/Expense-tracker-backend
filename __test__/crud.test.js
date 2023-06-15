@@ -5,32 +5,56 @@ var token = '';
 
 const { email, password } = require("../config/testConfig").loginCreds;
 
+// create redis client
+// const redis = require('redis');
+// const client = redis.createClient();
+
 beforeAll(async () => {
-    await mongoose.connect(url, connectionParams);
+
+    // Connect to Redis
+    // client.on('error', err => console.log('Redis Client Error', err));
+    // client.connect().then(() => console.log('Connected to Redis'));
+
+    // get access token
     const response = await request(app)
         .post('/auth/login/')
         .send({
             email,
             password
         })
+
     token = response.body.token;
 });
 
+// close Mongoose and redis connection
 afterAll(async () => {
+
+    // delete all keys
+    try {
+        await client.flushAll();
+
+    } catch (error) {
+        console.log('Error deleting keys:', error);
+    }
+
+    // close connections
     await mongoose.connection.close();
+    await client.quit();
 });
 
-
+/**
+ * Test if the given object has all expected properties and their values are of the expected types.
+ *
+ * @param {object} body - The object to be tested.
+ * @param {number} status - The expected status code.
+ */
 function testObjectProperties(body, status) {
     expect(status).toBe(200);
     expect(typeof body).toEqual('object');
 
-    expect(body).toHaveProperty('id');
-    expect(body).toHaveProperty('title');
-    expect(body).toHaveProperty('userId');
-    expect(body).toHaveProperty('amount');
-    expect(body).toHaveProperty('date');
-    expect(body).toHaveProperty('quantity');
+    ['id', 'title', 'userId', 'amount', 'date', 'quantity'].forEach(prop => {
+        expect(body).toHaveProperty(prop);
+    });
 
     const { id, title, userId, amount, date, quantity } = body;
     expect(typeof id).toBe('string');
@@ -45,9 +69,9 @@ function testObjectProperties(body, status) {
 
 describe('CRUD Test', () => {
 
-    test('GET/ => Returns an array of expenses and Status should be 200', async () => {
+    test('GET/ => Returns an array of expenses for Feb, 2023', async () => {
         const response = await request(app)
-            .get('/expenses/')
+            .get('/expenses?month=02&year=2023')
             .set({ 'x-access-token': `${token}` })
 
         expect(response.status).toBe(200);
@@ -55,7 +79,7 @@ describe('CRUD Test', () => {
         expect(resopnseBody).toBeInstanceOf(Array);
     });
 
-    test('POST/ => Returns new added expenses and Status should be 200', async () => {
+    test('POST/ => Returns new added expenses', async () => {
         const response = await request(app)
             .post('/expenses/new/').set({ 'x-access-token': `${token}` })
             .send({
