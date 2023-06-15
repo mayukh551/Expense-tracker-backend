@@ -16,7 +16,7 @@ const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
  * @param {Function} next - The next function
  */
 exports.fetchAllExpenses = async (req, res, next) => {
-    console.log('Fetch');
+
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
     // Extract email from request object
@@ -45,7 +45,6 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     if (expenses) {
         expenses.reverse();
-        console.log(expenses.length);
         // cache expenses
         const client = req['redis-client'];
         const cacheKey = `${email}:expenses:${month}:${year}`;
@@ -54,7 +53,6 @@ exports.fetchAllExpenses = async (req, res, next) => {
         await client.hSet(cacheKey, 'updateExpenseCache', 'false');
         // key expiry after 30 minutes
         await client.expire(cacheKey, 1800);
-        console.log(expenses.length);
         // send response
         res.status(200).json(expenses);
     }
