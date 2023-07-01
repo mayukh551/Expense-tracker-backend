@@ -4,11 +4,6 @@ kind: Deployment
 # info about the deployment
 metadata:
   name: server-depl
-  annotations:
-    autoscaling.kubernetes.io/horizontal-pod-autoscaler: "enabled"
-    autoscaling.kubernetes.io/horizontal-pod-autoscaler-min: "1"
-    autoscaling.kubernetes.io/horizontal-pod-autoscaler-max: "5"
-    autoscaling.kubernetes.io/horizontal-pod-autoscaler-cpu-utilization: "2"
 
 # specification of the deployment
 spec:
@@ -30,6 +25,13 @@ spec:
       containers:
         - name: server
           image: mayukh551/expense-tracker-server:1.0.0
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 200m
+              memory: 200Mi
           # environmental variables for the application to run inside this pod
           env:
             - name: PRIVATE_KEY
