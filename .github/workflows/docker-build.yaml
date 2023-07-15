@@ -41,12 +41,12 @@ jobs:
       # Build and Push Image to Artifact Registry
       - name: Build and Push Image to GAR
         run: |-
-          gcloud builds submit --region="$GKE_ZONE" --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$IMAGE_REPO_NAME/$IMAGE:latest"
+          gcloud builds submit --region=asia-south1 --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$IMAGE_REPO_NAME/$IMAGE:latest"
 
       # Get GKE cluster credentials to manage cluster
       - name: Authenticate to GKE Cluster
         run: |-
-          gcloud container clusters get-credentials "$GKE_CLUSTER" --region "$GKE_ZONE"
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --region asia-south1
 
       - name: Deploy to GKE
 
