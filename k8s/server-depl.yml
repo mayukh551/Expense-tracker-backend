@@ -24,7 +24,7 @@ spec:
     spec:
       containers:
         - name: server
-          image: mayukh551/expense-tracker-server:1.0.0
+          image: us-west2-docker.pkg.dev/expense-tracker-391807/expense-tracker-repo/expense-tracker-server:1.0.0
           resources:
             requests:
               cpu: 100m
@@ -65,7 +65,7 @@ kind: Service
 metadata:
   name: server-srv
 spec:
-  type: NodePort # type of Service
+  type: LoadBalancer # type of Service
   selector:
     app: server # name of the pod that NodePort will select
   ports:

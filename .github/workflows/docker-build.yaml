@@ -1,0 +1,57 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: ${{ secrets.GKE_CLUSTER }} # Add your cluster name here.
+  GKE_ZONE: ${{ secrets.GKE_ZONE }} # Add your cluster zone here.
+  IMAGE_REPO_NAME: ${{ secrets.IMAGE_REPO_NAME}}
+  IMAGE: ${{ secrets.IMAGE }}
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      # Checkout the repository
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Setup gcloud CLI
+      - name: GCloud CLI Setup
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GKE_SA_KEY }}
+          install_components: "gke-gcloud-auth-plugin"
+          project_id: ${{ secrets.GKE_PROJECT }}
+          export_default_credentials: true
+
+        # Configure Docker to use the gcloud command-line tool as a credential
+        # helper for authentication
+      - name: Configure Docker
+        run: |-
+          gcloud auth configure-docker "$GKE_ZONE-docker.pkg.dev"
+
+      # Build and Push Image to Artifact Registry
+      - name: Build and Push Image to GAR
+        run: |-
+          gcloud builds submit --region="$GKE_ZONE" --tag "$GKE_ZONE-docker.pkg.dev/$PROJECT_ID/$IMAGE_REPO_NAME/$IMAGE:latest"
+
+      # Get GKE cluster credentials to manage cluster
+      - name: Authenticate to GKE Cluster
+        run: |-
+          gcloud container clusters get-credentials "$GKE_CLUSTER" --region "$GKE_ZONE"
+
+      - name: Deploy to GKE
+
+        run: |-
+          kubectl config current-context
+          kubectl apply -f server-depl.yaml
+          kubectl apply -f server-hpa.yaml
+          kubectl apply -f server-secrets.yaml
