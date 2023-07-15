@@ -54,6 +54,6 @@ jobs:
           kubectl config current-context
           cd k8s/
           ls -l
-          kubectl apply -f server-depl.yaml
-          kubectl apply -f server-hpa.yaml
-          kubectl apply -f server-secrets.yaml
+          kubectl apply -f server-depl.yml
+          kubectl apply -f server-hpa.yml
+          kubectl apply -f server-secrets.yml
