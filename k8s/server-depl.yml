@@ -24,8 +24,7 @@ spec:
     spec:
       containers:
         - name: server
-          # image: us-west2-docker.pkg.dev/expense-tracker-391807/expense-tracker-repo/expense-tracker-server:1.0.0
-          image: asia-south1-docker.pkg.dev/expense-tracker-391807/expense-tracker-registry/expense-tracker-server:latest
+          image: us-west2-docker.pkg.dev/expense-tracker-391807/expense-tracker-repo/expense-tracker-server:latest
           resources:
             requests:
               cpu: 100m
