@@ -25,14 +25,23 @@ const register = async (req, res, next) => {
         password: hashedPassword
     });
     await newUser.save();
+
     require("dotenv").config({ path: '../.env' });
     const privateKey = process.env.PRIVATE_KEY;
+    
     const token = jwt.sign({
         name: name,
         email: email
     }, privateKey)
 
-    res.status(200).json({ isSuccess: true, token: token })
+    res.status(200).json({
+        isSuccess: true, token: token,
+        user: {
+            userId: newUser._id,
+            email: newUser.email,
+            name: newUser.name
+        }
+    })
 }
 
 const login = async (req, res, next) => {
@@ -47,13 +56,23 @@ const login = async (req, res, next) => {
         if (isValidPassword) {
             require("dotenv").config({ path: '../.env' });
             const privateKey = process.env.PRIVATE_KEY;
-            console.log(privateKey);
+
             // create token
             const token = jwt.sign({
                 name: user.name,
                 email: user.email
             }, privateKey)
-            res.status(200).json({ isSuccess: true, token: token })
+
+            res.status(200).json({
+                isSuccess: true,
+                token: token,
+                user: {
+                    userId: user._id,
+                    email: user.email,
+                    name: user.name
+                }
+            })
+
         } else {
             throw new AuthError(401, 'Login failed!', apiEndpoint);
         }

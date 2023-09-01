@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const expenseRouter = require('./Routers/expense.router');
 const authRouter = require('./Routers/auth.router');
 const analyticsRouter = require('./Routers/analytics.router');
+const accountRouter = require('./Routers/account.router');
 const errorHandler = require('./Middleware/error-handler');
 const dayjs = require('dayjs')
 
@@ -43,6 +44,7 @@ app.use((req, res, next) => {
 app.use('/auth', authRouter);
 app.use('/expenses', expenseRouter);
 app.use('/profile', analyticsRouter);
+app.use('/account', accountRouter);
 
 // error-handling middlewaqre
 app.use(errorHandler);

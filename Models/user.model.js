@@ -24,12 +24,58 @@ const userSchema = new Schema({
         },
         maxLength: 40,
     },
+
     password: {
         ...stringTypeFields,
         minLength: 6,
         maxLength: 1000000,
         required: [true, 'Password is compulsory'],
-    }
+    },
+
+    phone: {
+        type: String,
+
+        //TODO : Improve the regex test
+        validate: {
+            validator: function (v) {
+                return /\d{10}/.test(v);
+            },
+        },
+        unique: true,
+        minLength: 10
+    },
+
+    budget: {
+        monthly: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 1000000,
+        },
+
+        yearly: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 1000000,
+        }
+    },
+
+    age: {
+        type: Number,
+        min: 6,
+        max: 150
+    },
+
+    salary: {
+        type: Number,
+        min: 500,
+        max: 100000000
+    },
+
+    category: [{
+        type: String,
+    }]
 })
 
 const User = mongoose.model('User', userSchema);
