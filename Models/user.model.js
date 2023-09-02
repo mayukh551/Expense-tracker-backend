@@ -79,7 +79,7 @@ const userSchema = new Schema({
 
     profile_img: {
         type: String,
-        default: `https://eu.ui-avatars.com/api/?name=Profile&size=250`
+        default: `https://i.stack.imgur.com/YaL3s.jpg`
     }
 })
 
