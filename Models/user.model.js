@@ -75,7 +75,12 @@ const userSchema = new Schema({
 
     category: [{
         type: String,
-    }]
+    }],
+
+    profile_img: {
+        type: String,
+        default: `https://eu.ui-avatars.com/api/?name=Profile&size=250`
+    }
 })
 
 const User = mongoose.model('User', userSchema);

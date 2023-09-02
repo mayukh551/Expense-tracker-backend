@@ -16,25 +16,14 @@ const createAccount = async (req, res, next) => {
 
     const { phone, monthly, yearly, age, salary } = req.body;
 
-    const category = req.body.category.split(', ');
+    console.log(req.body);
+
+    const data = req.body;
+
+    // const category = req.body.category.split(', ');
 
     try {
-        const account = await User.findByIdAndUpdate(id, {
-            phone,
-            budget: {
-                monthly,
-                yearly
-            },
-            age,
-            salary,
-            category
-        }, { new: true }).select('name email phone budget age salary category').lean();
-
-        try {
-            await account.save();
-        } catch (error) {
-            throw new UserError(500, "Failed to Create Account", apiEndpoint);
-        }
+        const account = await User.findByIdAndUpdate(id, data, { new: true }).select('name email phone budget age salary category profile_img').lean();
 
         res.status(201).json({ data: account, message: "Account Created Successfully" });
 
@@ -61,7 +50,8 @@ const getAccount = async (req, res, next) => {
     try {
         const account = await User
             .findById(id)
-            .select('email phone budget age salary name')
+            // .select('email phone budget age salary name profile_img')
+            .select('-expenses -category -password -__v')
             .lean();
 
         if (!account)
