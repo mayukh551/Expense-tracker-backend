@@ -14,16 +14,12 @@ const createAccount = async (req, res, next) => {
 
     const { id } = req.params;
 
-    const { phone, monthly, yearly, age, salary } = req.body;
-
-    console.log(req.body);
-
     const data = req.body;
 
     // const category = req.body.category.split(', ');
 
     try {
-        const account = await User.findByIdAndUpdate(id, data, { new: true }).select('name email phone budget age salary category profile_img').lean();
+        const account = await User.findByIdAndUpdate(id, data, { new: true }).select('name email phone budget age salary category profile_img');
 
         res.status(201).json({ data: account, message: "Account Created Successfully" });
 
@@ -50,9 +46,7 @@ const getAccount = async (req, res, next) => {
     try {
         const account = await User
             .findById(id)
-            // .select('email phone budget age salary name profile_img')
-            .select('-expenses -category -password -__v')
-            .lean();
+            .select('email phone budget age salary name profile_img')
 
         if (!account)
             throw new UserError(401, "User not found", apiEndpoint);
@@ -93,8 +87,7 @@ const updateAccount = async (req, res, next) => {
 
         const account = await User
             .findByIdAndUpdate(id, newData, { new: true })
-            .select('email phone budget age salary name category')
-            .lean();
+            .select('-expenses -password -__v');
 
         if (!account)
             throw new UserError(401, "User not found", apiEndpoint);
@@ -122,9 +115,8 @@ const deleteAccount = async (req, res, next) => {
     const { id } = req.params;
 
     try {
-        const account = await User
-            .findByIdAndDelete(id)
-            .lean();
+        
+        await User.findByIdAndDelete(id);
 
         if (!account)
             throw new UserError(401, "User not found", apiEndpoint);
