@@ -18,6 +18,9 @@ const getYearAnalytics = (year, itemList) => {
         }
     })
 
+    // set lowestExpense to 0, if no item is purchased
+    if (lowestExpense == Number.MAX_VALUE) lowestExpense = 0;
+
     if (itemCounter > 0)
         avgExpenditure = totalPurchaseAmount / itemCounter;
 
@@ -93,6 +96,8 @@ const getMonthAnalytics = (year, itemList) => {
             };
         }
     })
+
+    // console.log('maxTotalExpense', maxTotalExpense, 'minTotalExpense', minTotalExpense, highExpenseMonthDetails.month);
 
     // only 1 month expense is caclulated, rest all are zero
     if (totalExpenseIsZeroCounter == 1)
