@@ -46,10 +46,12 @@ const getAccount = async (req, res, next) => {
     try {
         const account = await User
             .findById(id)
-            .select('email phone budget age salary name profile_img')
+            .select('email phone budget age salary name profile_img category')
 
         if (!account)
             throw new UserError(401, "User not found", apiEndpoint);
+
+        console.log(account);
 
         res.status(200).json({ data: account });
 
@@ -77,6 +79,8 @@ const updateAccount = async (req, res, next) => {
         const { id } = req.params;
 
         const newData = req.body;
+
+        console.log(newData);
 
         // console.log(budget, age, salary, phone);
         // check if object is empty or not
@@ -115,7 +119,7 @@ const deleteAccount = async (req, res, next) => {
     const { id } = req.params;
 
     try {
-        
+
         await User.findByIdAndDelete(id);
 
         if (!account)
