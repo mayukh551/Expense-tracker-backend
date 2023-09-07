@@ -28,7 +28,7 @@ const register = async (req, res, next) => {
 
     require("dotenv").config({ path: '../.env' });
     const privateKey = process.env.PRIVATE_KEY;
-    
+
     const token = jwt.sign({
         name: name,
         email: email
@@ -74,13 +74,13 @@ const login = async (req, res, next) => {
             })
 
         } else {
-            throw new AuthError(401, 'Login failed!', apiEndpoint);
+            throw new AuthError(401, 'Invalid Password!', apiEndpoint);
         }
     }
 
     // if user does not exist
     else {
-        throw new AuthError(401, 'You do not have an account. Sign Up!', apiEndpoint);
+        throw new AuthError(401, 'Invalid Username or Password!', apiEndpoint);
     }
 
 }

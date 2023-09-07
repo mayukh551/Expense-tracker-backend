@@ -120,7 +120,7 @@ const deleteAccount = async (req, res, next) => {
 
     try {
 
-        await User.findByIdAndDelete(id);
+        const account = await User.findByIdAndDelete(id);
 
         if (!account)
             throw new UserError(401, "User not found", apiEndpoint);
