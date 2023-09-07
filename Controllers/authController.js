@@ -68,6 +68,7 @@ const login = async (req, res, next) => {
                 token: token,
                 user: {
                     userId: user._id,
+                    budget: user.budget,
                     email: user.email,
                     name: user.name
                 }
