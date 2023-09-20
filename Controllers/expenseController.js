@@ -17,20 +17,12 @@ const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
  */
 exports.fetchAllExpenses = async (req, res, next) => {
 
-    const apiEndpoint = req.method + '/ : ' + req.originalUrl;
-
-    // Extract email from request object
-    const email = req['user-email'];
-    console.log(email);
+    const apiEndpoint = req.method + '/ : ' + req.originalUrl;  
 
     // extracting queries for filter and sort values
     const { month, year } = req.query;
 
-    if (!email) throw new CrudError(401, 'Invalid Email', apiEndpoint);
-
-    const user = await User.findOne({ email: email });
-
-    console.log('in fetch all expenses', user._id);
+    const userId = req['userId'];
 
     const dateRegex = new RegExp('^' + year + '-' + month);
 
@@ -38,7 +30,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     // fetch expenses based on available fields and sorted by user choice
     const expenses = await Expense.find({
-        userId: user._id,
+        userId: userId,
         $or: [{ year, month: monthName }, { date: { $regex: dateRegex } }]
     })
         .select('id title amount date userId quantity year month category')
@@ -48,7 +40,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
         expenses.reverse();
         // cache expenses
         const client = req['redis-client'];
-        const cacheKey = `${email}:expenses:${month}:${year}`;
+        const cacheKey = `${userId}:expenses:${month}:${year}`;
 
         await client.hSet(cacheKey, 'expenses', JSON.stringify(expenses));
         await client.hSet(cacheKey, 'updateExpenseCache', 'false');
@@ -60,8 +52,6 @@ exports.fetchAllExpenses = async (req, res, next) => {
     else throw new CrudError(500, 'Failed to load expenses. Try again later.', apiEndpoint);
 
 }
-
-
 
 
 /**
@@ -81,16 +71,14 @@ exports.addNewExpense = async (req, res, next) => {
     const userPrice = req.body.amount;
     const userQuantity = req.body.quantity;
 
-    const email = req['user-email'];
-
-    const user = await User.findOne({ email: email });
+    const userId = req['userId']
 
     const month = monthList[parseInt(userDate.slice(5, 7)) - 1];
     const year = userDate.slice(0, 4);
 
     const expense = new Expense({
         id: productId,
-        userId: user._id,
+        userId: userId,
         date: userDate,
         month,
         year,
@@ -104,7 +92,7 @@ exports.addNewExpense = async (req, res, next) => {
 
         // set update expense cache to true
         const client = req['redis-client'];
-        const cacheKey = `${email}:expenses:${userDate.slice(5, 7)}:${year}`;
+        const cacheKey = `${userId}:expenses:${userDate.slice(5, 7)}:${year}`;
         await client.hSet(cacheKey, 'updateExpenseCache', 'true');
 
         // sending response
@@ -131,6 +119,8 @@ exports.updateExpense = async (req, res, next) => {
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
     const { id } = req.params;
 
+    const userId = req['userId'];
+
     const updatedExpense = await Expense.findOneAndUpdate({ id: id }, req.body, { new: true });
     if (!updatedExpense)
         throw new CrudError(404, 'Item Not Found!', apiEndpoint);
@@ -142,7 +132,7 @@ exports.updateExpense = async (req, res, next) => {
             // set update expense cache to true
             const client = req['redis-client'];
             const { email } = await User.findById(updatedExpense.userId);
-            const cacheKey = `${email}:expenses:${updatedExpense.date.slice(5, 7)}:${updatedExpense.date.slice(0, 4)}`;
+            const cacheKey = `${userId}:expenses:${updatedExpense.date.slice(5, 7)}:${updatedExpense.date.slice(0, 4)}`;
             await client.hSet(cacheKey, 'updateExpenseCache', 'true');
 
         } catch (error) {
@@ -172,6 +162,8 @@ exports.deleteExpense = async (req, res, next) => {
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
     const { id } = req.params;
 
+    const userId = req['userId'];
+
     const deletedExpense = await Expense.findOneAndDelete({ id: id }, { new: true });
 
     if (!deletedExpense) throw new CrudError(404, 'Item Not Found!', apiEndpoint);
@@ -181,7 +173,7 @@ exports.deleteExpense = async (req, res, next) => {
             // set update expense cache to true
             const client = req['redis-client'];
             const { email } = await User.findById(deletedExpense.userId);
-            const cacheKey = `${email}:expenses:${deletedExpense.date.slice(5, 7)}:${deletedExpense.date.slice(0, 4)}`;
+            const cacheKey = `${userId}:expenses:${deletedExpense.date.slice(5, 7)}:${deletedExpense.date.slice(0, 4)}`;
             await client.hSet(cacheKey, 'updateExpenseCache', 'true');
 
         } catch (error) {

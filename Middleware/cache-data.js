@@ -1,27 +1,8 @@
-// import redis client
-const path = require('path');
-const redis = require('redis');
 const asyncWrap = require('./async-wrapper');
 const CacheError = require('../Error/CacheError');
-const dotenv = require('dotenv').config({ path: path.join(__dirname, '../.env') }) || require('dotenv').config({ path: '../.env' });
+const User = require('../Models/user.model');
 
-// Redis Cloud Connection based on node environment
-const node_env = process.env.NODE_ENV;
-console.log(node_env);
-var client;
-
-if (node_env === 'production') {
-    console.log('Connection in production');
-    client = redis.createClient({ url: process.env.REDIS_URL });
-}
-
-else { console.log('in dev'); client = redis.createClient(); }
-
-
-
-client.on('error', err => console.log('Redis Client Error', err));
-
-client.connect().then(() => console.log('Connected to Redis in cache-data file'));
+const client = require('../config/redisConfig');
 
 /**
  * Cache data middleware
@@ -35,8 +16,14 @@ const cacheData = asyncWrap(async (req, res, next) => {
 
     const { month, year } = req.query;
 
+    if (!email) throw new CrudError(401, 'Invalid Email', apiEndpoint);
+
+    const user = await User.findOne({ email: email });
+
+    req['userId'] = user._id;
+
     // cache key format: email:expenses:month:year
-    const cacheKey = `${email}:expenses:${month}:${year}`;
+    const cacheKey = `${user._id}:expenses:${month}:${year}`;
     // const cacheKey = `${email}:expenses`;
     req['redis-client'] = client;
 
