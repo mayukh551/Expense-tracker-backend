@@ -56,6 +56,11 @@ const expenseSchema = new Schema({
         min: 1,
         max: 999999999999999,
         required: [true, 'Purchase Amount is requried']
+    },
+
+    category: {
+        ...stringTypeFields,
+        default: 'Others'
     }
 })
 

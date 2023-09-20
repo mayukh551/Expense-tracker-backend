@@ -30,6 +30,8 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     const user = await User.findOne({ email: email });
 
+    console.log('in fetch all expenses', user._id);
+
     const dateRegex = new RegExp('^' + year + '-' + month);
 
     const monthName = monthList[parseInt(month) - 1]; // Ex: converting 03 => Mar
@@ -39,7 +41,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
         userId: user._id,
         $or: [{ year, month: monthName }, { date: { $regex: dateRegex } }]
     })
-        .select('id title amount date userId quantity year month')
+        .select('id title amount date userId quantity year month category')
         .sort({ date: 'asc' })
 
     if (expenses) {
