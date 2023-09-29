@@ -1,6 +1,5 @@
 const { getYearAnalytics, getMonthAnalytics, noDataResponse } = require('../utils/analyticsHelper');
 const User = require('../Models/user.model.js');
-const verifyUser = require('../Middleware/verify-user');
 const Expenses = require('../Models/expense.model')
 
 const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -51,7 +50,7 @@ fetchAnalytics = async (req, res, next) => {
 
 
 const getYearhChartData = async (req, res, next) => {
-    // const decoded = verifyUser(req, next);
+
     const email = req['user-email'];
     const user = await User.findOne({ email: email });
     const expenses = await Expenses.find({ userId: user._id });
@@ -78,7 +77,16 @@ const getYearhChartData = async (req, res, next) => {
             }
         })
 
-        var yearChartData = Object.values(expenseMonthSum);
+        // labels are month no.s
+        const labels = Object.keys(expenseMonthSum);
+
+        // to store expense amount for every month of a given year for the year chart
+        var yearChartData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        // filling up expense amount for every month of a given year for the year chart
+        labels.forEach(label => {
+            yearChartData[parseInt(label) - 1] = expenseMonthSum[label];
+        })
 
         var isYearEmpty = 0;
         yearChartData.forEach(amount => {
