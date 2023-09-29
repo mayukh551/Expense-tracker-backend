@@ -17,7 +17,7 @@ const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'
  */
 exports.fetchAllExpenses = async (req, res, next) => {
 
-    const apiEndpoint = req.method + '/ : ' + req.originalUrl;  
+    const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
     // extracting queries for filter and sort values
     const { month, year } = req.query;
@@ -70,6 +70,9 @@ exports.addNewExpense = async (req, res, next) => {
     const userLabel = req.body.title;
     const userPrice = req.body.amount;
     const userQuantity = req.body.quantity;
+    const userCategory = req.body.category;
+
+    if (userCategory === undefined) userCategory = 'Others';
 
     const userId = req['userId']
 
@@ -84,7 +87,8 @@ exports.addNewExpense = async (req, res, next) => {
         year,
         title: userLabel,
         amount: userPrice,
-        quantity: userQuantity
+        quantity: userQuantity,
+        category: userCategory
     });
 
     try {
