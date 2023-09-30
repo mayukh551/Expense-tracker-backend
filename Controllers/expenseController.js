@@ -6,6 +6,21 @@ const Expense = require('../Models/expense.model');
 
 const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
+const monthNo = {
+    'Jan': '01',
+    'Feb': '02',
+    'Mar': '03',
+    'Apr': '04',
+    'May': '05',
+    'Jun': '06',
+    'Jul': '07',
+    'Aug': '08',
+    'Sep': '09',
+    'Oct': '10',
+    'Nov': '11',
+    'Dec': '12'
+}
+
 /* CRUD Operations */
 
 /**
@@ -155,7 +170,7 @@ exports.updateExpense = async (req, res, next) => {
 
 
 /**
- * @function deletedExpense
+ * @function deleteExpense
  * @description delete an existing expense found by its id
  * @param {Object} req - The request object
  * @param {Object} res - The response object
@@ -164,26 +179,40 @@ exports.updateExpense = async (req, res, next) => {
 exports.deleteExpense = async (req, res, next) => {
 
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
-    const { id } = req.params;
+
+    const { ids, month, year } = req.body;
+
+    console.log(ids, month, year);
 
     const userId = req['userId'];
 
-    const deletedExpense = await Expense.findOneAndDelete({ id: id }, { new: true });
+    if (ids.length === 0) throw new CrudError(400, 'No items selected!', apiEndpoint);
+
+    var deletedExpense;
+
+    deletedExpense = await Expense.deleteMany({ id: { $in: ids } });
+
+    console.log(deletedExpense);
+
+    const client = req['redis-client'];
 
     if (!deletedExpense) throw new CrudError(404, 'Item Not Found!', apiEndpoint);
     else {
 
+
         try {
+
             // set update expense cache to true
-            const client = req['redis-client'];
-            const { email } = await User.findById(deletedExpense.userId);
-            const cacheKey = `${userId}:expenses:${deletedExpense.date.slice(5, 7)}:${deletedExpense.date.slice(0, 4)}`;
+            const cacheKey = `${userId}:expenses:${monthNo[month]}:${year}`;
+
             await client.hSet(cacheKey, 'updateExpenseCache', 'true');
+            res.status(200).json(deletedExpense);
+
+            // await client.del(cacheKey);
 
         } catch (error) {
-            console.log(error);
+            throw new CrudError(500, null, apiEndpoint);
         }
 
-        res.status(200).json(deletedExpense);
     }
 }
