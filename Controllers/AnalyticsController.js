@@ -161,15 +161,19 @@ const getMonthChartData = async (req, res, next) => {
 
 const categoryPieChart = async (req, res, next) => {
 
+    console.log("Inside categoryPieChart");
+
     // prepare data from categories of Expenses documents
     try {
         const apiEndpoint = req.originalUrl;
 
         const { id: userId } = req.params;
 
+        const year = req.query.year;
+
         if (!userId) throw new UserError(400, 'User ID is required', apiEndpoint);
 
-        const expenses = await Expenses.find({ userId: userId });
+        const expenses = await Expenses.find({ userId: userId, year: year });
 
         if (!expenses) throw new UserError(400, 'No expenses found', apiEndpoint);
 
@@ -195,6 +199,8 @@ const categoryPieChart = async (req, res, next) => {
             data.push(categorySum[key]);
         })
 
+        console.log(labels, data);
+
         res.status(200).json({
             success: true,
             data: data,
@@ -219,33 +225,35 @@ const createMonthlyExpenditurePieChart = async (req, res, next) => {
 
         const { id: userId } = req.params;
 
+        const year = req.query.year;
+
         if (!userId) throw new UserError(400, 'User ID is required', apiEndpoint);
 
-        const expenses = await Expenses.find({ userId: userId });
+        const expenses = await Expenses.find({ userId: userId, year: year });
 
         if (!expenses) throw new UserError(400, 'No expenses found', apiEndpoint);
 
         // from the expenses array, find the total sum of amount for each category
         var monthSum = {};
 
+        for (let index = 0; index < 12; index++)
+            monthSum[monthList[index]] = 0;
+
         expenses.forEach(expense => {
-
-            // if category already exists, add the amount to the existing amount
-            if (expense.month in monthSum)
-                monthSum[expense.month] += expense.amount * expense.quantity;
-
-            // if category doesn't exist, create a new category and add the amount
-            else
-                monthSum[expense.month] = expense.amount * expense.quantity;
+            // add the amount to the existing amount
+            monthSum[expense.month] += expense.amount * expense.quantity;
         });
 
-        const labels = Object.keys(monthSum)
+        const labels = monthList;
 
-        const data = [];
+        const data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
         labels.forEach(key => {
-            data.push(monthSum[key]);
+            let ind = monthList.indexOf(key);
+            data[ind] = monthSum[key];
         })
+
+        console.log(labels, data);
 
         res.status(200).json({
             success: true,
