@@ -1,6 +1,7 @@
 const { getYearAnalytics, getMonthAnalytics, noDataResponse } = require('../utils/analyticsHelper');
 const User = require('../Models/user.model.js');
 const Expenses = require('../Models/expense.model')
+const UserError = require('../Error/UserError');
 
 const monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
@@ -166,6 +167,114 @@ const getMonthChartData = async (req, res, next) => {
 }
 
 
+const categoryPieChart = async (req, res, next) => {
+
+    console.log("Inside categoryPieChart");
+
+    // prepare data from categories of Expenses documents
+    try {
+        const apiEndpoint = req.originalUrl;
+
+        const { id: userId } = req.params;
+
+        const year = req.query.year;
+
+        if (!userId) throw new UserError(400, 'User ID is required', apiEndpoint);
+
+        const expenses = await Expenses.find({ userId: userId, year: year });
+
+        if (!expenses) throw new UserError(400, 'No expenses found', apiEndpoint);
+
+        // from the expenses array, find the total sum of amount for each category
+        var categorySum = {};
+
+        expenses.forEach(expense => {
+
+            // if category already exists, add the amount to the existing amount
+            if (expense.category in categorySum)
+                categorySum[expense.category] += expense.amount * expense.quantity;
+
+            // if category doesn't exist, create a new category and add the amount
+            else
+                categorySum[expense.category] = expense.amount * expense.quantity;
+        });
+
+        const labels = Object.keys(categorySum)
+
+        const data = [];
+
+        labels.forEach(key => {
+            data.push(categorySum[key]);
+        })
+
+        console.log(labels, data);
+
+        res.status(200).json({
+            success: true,
+            data: data,
+            labels: labels
+        })
+    }
+    catch (err) {
+        noDataResponse(res);
+    }
+
+}
+
+
+// create monthly expenditure pie chart
+
+const createMonthlyExpenditurePieChart = async (req, res, next) => {
+
+    // prepare data from categories of Expenses documents
+    try {
+
+        const apiEndpoint = req.originalUrl;
+
+        const { id: userId } = req.params;
+
+        const year = req.query.year;
+
+        if (!userId) throw new UserError(400, 'User ID is required', apiEndpoint);
+
+        const expenses = await Expenses.find({ userId: userId, year: year });
+
+        if (!expenses) throw new UserError(400, 'No expenses found', apiEndpoint);
+
+        // from the expenses array, find the total sum of amount for each category
+        var monthSum = {};
+
+        for (let index = 0; index < 12; index++)
+            monthSum[monthList[index]] = 0;
+
+        expenses.forEach(expense => {
+            // add the amount to the existing amount
+            monthSum[expense.month] += expense.amount * expense.quantity;
+        });
+
+        const labels = monthList;
+
+        const data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+        labels.forEach(key => {
+            let ind = monthList.indexOf(key);
+            data[ind] = monthSum[key];
+        })
+
+        console.log(labels, data);
+
+        res.status(200).json({
+            success: true,
+            data: data,
+            labels: labels
+        })
+    }
+    catch (err) {
+        noDataResponse(res);
+    }
+}
+
+
 
 // const findHighestExpense = (itemList) => {
 //     var maxPrice = 0;
@@ -242,6 +351,6 @@ module.exports = {
     fetchAnalytics,
     getYearhChartData,
     getMonthChartData,
-    // findHighestExpense,
-    // findYearWithHighLowExpense
+    categoryPieChart,
+    createMonthlyExpenditurePieChart
 };
