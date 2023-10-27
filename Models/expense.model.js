@@ -64,6 +64,8 @@ const expenseSchema = new Schema({
     }
 })
 
+expenseSchema.index({ userId: 1 });
+
 const Expense = mongoose.model('Expense', expenseSchema);
 
 module.exports = Expense;
