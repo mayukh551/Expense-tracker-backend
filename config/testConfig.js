@@ -11,6 +11,7 @@ const testsOrder = [
     'auth.test.js',
     'crud.test.js',
     'analytics.test.js',
+    // 'account.test.js',
     'empty-token.test.js',
 ];
 

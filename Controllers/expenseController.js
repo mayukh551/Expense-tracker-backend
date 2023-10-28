@@ -80,12 +80,12 @@ exports.addNewExpense = async (req, res, next) => {
 
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
-    const productId = req.body.id;
-    const userDate = req.body.date;
-    const userLabel = req.body.title;
-    const userPrice = req.body.amount;
-    const userQuantity = req.body.quantity;
-    const userCategory = req.body.category;
+    var productId = req.body.id;
+    var userDate = req.body.date;
+    var userLabel = req.body.title;
+    var userPrice = req.body.amount;
+    var userQuantity = req.body.quantity;
+    var userCategory = req.body.category;
 
     if (userCategory === undefined) userCategory = 'Others';
 
@@ -192,7 +192,7 @@ exports.deleteExpense = async (req, res, next) => {
 
     deletedExpense = await Expense.deleteMany({ id: { $in: ids } });
 
-    console.log(deletedExpense);
+    console.log('in delete controller', deletedExpense);
 
     const client = req['redis-client'];
 

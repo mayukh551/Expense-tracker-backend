@@ -48,7 +48,13 @@ describe('Unauthorized CRUD Attempt Test', () => {
 
     test('DEL/ => Empty token | statusCode should be 401', async () => {
         const response = await request(app)
-            .delete('/expenses/delete/test-123/').set({ 'x-access-token': `${''}` })
+            .post('/expenses/delete/')
+            .set({ 'x-access-token': `${''}` })
+            .send({
+                ids: ['test-123'],
+                month: 'Jan',
+                year: '2022'
+            })
 
         expect(response.status).toBe(401);
     })

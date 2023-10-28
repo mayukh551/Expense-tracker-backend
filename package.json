@@ -6,7 +6,8 @@
   "scripts": {
     "start": "jest && nodemon index.js",
     "dev": "nodemon index.js",
-    "test": "jest --forceExit"
+    "test": "jest --forceExit",
+    "test:s": "jest --silent --forceExit"
   },
   "keywords": [],
   "author": "",

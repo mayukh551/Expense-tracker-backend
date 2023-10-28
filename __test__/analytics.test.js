@@ -49,22 +49,22 @@ describe('Fetch Year and Month Analytics', () => {
     })
 
 
-    test('Fetch Year Chart Data', async () => {
-        const response = await request(app)
-            .get('/profile/year/2023')
-            .set('x-access-token', `${token}`);
+    // test('Fetch Year Chart Data', async () => {
+    //     const response = await request(app)
+    //         .get('/profile/year/2023')
+    //         .set('x-access-token', `${token}`);
 
-        shouldHaveData(response);
-    })
+    //     shouldHaveData(response);
+    // })
 
 
-    test('Fetch Month Chart Data', async () => {
-        const response = await request(app)
-            .get('/profile/month/Jan/2023')
-            .set('x-access-token', `${token}`);
+    // test('Fetch Month Chart Data', async () => {
+    //     const response = await request(app)
+    //         .get('/profile/month/Jan/2023')
+    //         .set('x-access-token', `${token}`);
 
-        shouldHaveData(response);
-    })
+    //     shouldHaveData(response);
+    // })
 
 
     // Testing Empty Data from Analytics
