@@ -2,3 +2,4 @@
 /Controllers/env
 
 /node_modules/
+/coverage/

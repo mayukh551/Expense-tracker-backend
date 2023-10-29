@@ -7,7 +7,8 @@
     "start": "jest && nodemon index.js",
     "dev": "nodemon index.js",
     "test": "jest --forceExit",
-    "test:s": "jest --silent --forceExit"
+    "test:s": "jest --silent --forceExit",
+    "test:watch": "jest --watchAll"
   },
   "keywords": [],
   "author": "",
