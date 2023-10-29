@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "jest && nodemon index.js",
+    "start": "node index.js",
     "dev": "nodemon index.js",
     "test": "jest --forceExit",
     "test:s": "jest --silent --forceExit",
@@ -14,7 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "autocannon": "^7.11.0",
+    "axios": "^1.6.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dayjs": "^1.11.7",
@@ -30,6 +30,7 @@
     "supertest": "^6.3.3"
   },
   "devDependencies": {
+    "autocannon": "^7.12.0",
     "superagent": "^8.0.8"
   }
 }
