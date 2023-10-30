@@ -50,6 +50,9 @@ exports.fetchAllExpenses = async (req, res, next) => {
     })
         .select('id title amount date userId quantity year month category')
         .sort({ date: 'asc' })
+    // .explain('executionStats');
+
+    console.log(expenses);
 
     if (expenses) {
         expenses.reverse();
@@ -145,7 +148,9 @@ exports.updateExpense = async (req, res, next) => {
         throw new CrudError(404, 'Item Not Found!', apiEndpoint);
 
     try {
+        
         await updatedExpense.save();
+        res.status(200).json(updatedExpense);
 
         try {
             // set update expense cache to true
@@ -158,7 +163,6 @@ exports.updateExpense = async (req, res, next) => {
             console.log(error);
         }
 
-        res.status(200).json(updatedExpense);
     } catch (error) {
         console.log(error);
         throw new CrudError(500, null, apiEndpoint);
