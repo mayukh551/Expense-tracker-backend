@@ -15,16 +15,7 @@ Access the live website here: [CoinWise](https://expense-tracker-react-nine.verc
 
 ## Introduction
 
-React Expense Tracker is a versatile web app designed to help you manage your finances more effectively. With this app, you can:
-
-- Add new expenses to keep a record of your spending.
-- Delete existing expenses when needed.
-- Update expense details such as date, item name, and price.
-- Visualize your spending behavior with insightful charts and statistics.
-- Set monthly and yearly budgets to control your expenditures.
-- Categorize your expenses for better organization.
-
-
+React Expense Tracker is a versatile web app designed to help you manage your finances more effectively.
 
 ## Features
 
