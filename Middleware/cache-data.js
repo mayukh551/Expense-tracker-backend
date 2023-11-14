@@ -22,20 +22,23 @@ const cacheData = asyncWrap(async (req, res, next) => {
 
     req['userId'] = user._id;
 
-    // cache key format: email:expenses:month:year
-    const cacheKey = `${user._id}:expenses:${month}:${year}`;
-    // const cacheKey = `${email}:expenses`;
+    
     req['redis-client'] = client;
 
     console.log(req.method);
-
+    
     //* For Requests: POST, PUT, DELETE
     if (['PUT', 'DELETE', 'POST'].includes(req.method)) return next();
-
+    
 
     //* For Requests: GET
     var cachedData;
     if (req.method === 'GET') {
+
+        // cache key format: email:expenses:month:year
+        const cacheKey = `${user._id}:expenses:${month}:${year}`;
+        console.log('in cache data middleware',cacheKey);
+        
         try {
             // Attempt to retrieve cached data
             cachedData = await client.hGet(cacheKey, 'expenses');
