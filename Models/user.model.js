@@ -58,6 +58,13 @@ const userSchema = new Schema({
             default: 0,
             min: 0,
             max: 1000000,
+        },
+
+        item: {
+            type: Number,
+            default: 0,
+            min: 0,
+            max: 1000000,
         }
     },
 
