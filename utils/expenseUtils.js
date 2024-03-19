@@ -33,7 +33,7 @@ const monthNo = {
  * @param {[Object]} expenses List of expense Docs
  * @returns {void}
  */
-async function cacheExpenses(client, userId, month, year, expenses) {
+async function cacheExpenses(client, userId, month, year, page, expenses) {
 
     var shouldCache = false;
 
@@ -41,7 +41,7 @@ async function cacheExpenses(client, userId, month, year, expenses) {
 
     if (month == curTime.month && year == curTime.year) shouldCache = true;
 
-    const reqCounterKey = `${userId}:expenses:counter:${month}:${year}`;
+    const reqCounterKey = `${userId}:expenses:counter:${month}:${year}:${page}`;
     const totalCounterSizeKey = `${userId}:expenses:counter:size`;
 
     let getReqCount = await client.get(reqCounterKey);
@@ -50,18 +50,18 @@ async function cacheExpenses(client, userId, month, year, expenses) {
 
         let counterKeySize = await client.get(totalCounterSizeKey);
 
-        
+
         // if counterKey size does not exist, update to 1
-        if(!counterKeySize) await client.set(totalCounterSizeKey, 1);
-        
+        if (!counterKeySize) await client.set(totalCounterSizeKey, 1);
+
         // if exists,
-        else{
+        else {
 
             //TODO: implement LRU cache
-            
+
             // -> if size < 4, increment size
             // if(counterKeySize < 4) await client.incr(counterKeySize);
-            
+
             // -> if size === 4, remove least used cached expense and add the new expense info
 
 
@@ -78,10 +78,11 @@ async function cacheExpenses(client, userId, month, year, expenses) {
     } else
         getReqCount = await client.incr(reqCounterKey); // increment request count
 
-
+    // if no. of request is atleast twice or current month and year expenses requested, 
+    // cache the expenses
     if (getReqCount >= 2 || shouldCache) {
 
-        const cacheKey = `${userId}:expenses:${month}:${year}`;
+        const cacheKey = `${userId}:expenses:${month}:${year}:${page}`;
         console.log("Hum toh idhhar hi hain", cacheKey);
 
         await client.hSet(cacheKey, 'expenses', JSON.stringify(expenses));

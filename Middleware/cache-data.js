@@ -14,7 +14,7 @@ const cacheData = asyncWrap(async (req, res, next) => {
     // Extract email from request object
     const email = req['user-email'];
 
-    const { month, year } = req.query;
+    const { month, year, page } = req.query;
 
     if (!email) throw new CrudError(401, 'Invalid Email', apiEndpoint);
 
@@ -36,7 +36,7 @@ const cacheData = asyncWrap(async (req, res, next) => {
     if (req.method === 'GET') {
 
         // cache key format: email:expenses:month:year
-        const cacheKey = `${user._id}:expenses:${month}:${year}`;
+        const cacheKey = `${user._id}:expenses:${month}:${year}:${page}`;
         console.log('in cache data middleware',cacheKey);
         
         try {
