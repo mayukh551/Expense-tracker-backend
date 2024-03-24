@@ -14,7 +14,7 @@ const cacheData = asyncWrap(async (req, res, next) => {
     // Extract email from request object
     const email = req['user-email'];
 
-    const { month, year, page } = req.query;
+    const { month, year, page, itemsPerPage } = req.query;
 
     if (!email) throw new CrudError(401, 'Invalid Email', apiEndpoint);
 
@@ -22,23 +22,23 @@ const cacheData = asyncWrap(async (req, res, next) => {
 
     req['userId'] = user._id;
 
-    
+
     req['redis-client'] = client;
 
     console.log(req.method);
-    
+
     //* For Requests: POST, PUT, DELETE
     if (['PUT', 'DELETE', 'POST'].includes(req.method)) return next();
-    
+
 
     //* For Requests: GET
     var cachedData;
     if (req.method === 'GET') {
 
         // cache key format: email:expenses:month:year
-        const cacheKey = `${user._id}:expenses:${month}:${year}:${page}`;
-        console.log('in cache data middleware',cacheKey);
-        
+        const cacheKey = `${user._id}:expenses:${month}:${year}:${page}:${itemsPerPage}`;
+        console.log('in cache data middleware', cacheKey);
+
         try {
             // Attempt to retrieve cached data
             cachedData = await client.hGet(cacheKey, 'expenses');
@@ -48,7 +48,7 @@ const cacheData = asyncWrap(async (req, res, next) => {
             console.log('Cache needs an update', needsUpdate);
 
             // if cached data has to be updated or cache does not exist
-            if (needsUpdate == true || needsUpdate == null) {
+            if (needsUpdate == true || needsUpdate == null || await client.exists(cacheKey) === 0) {
                 console.log('Going to next middleware to fetch fresh data');
                 return next();
             }

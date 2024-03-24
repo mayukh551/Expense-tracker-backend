@@ -32,7 +32,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
     const { month, year } = req.query;
 
     const page = req.query.page ? Number(req.query.page) : 1;
-    const itemsPerPage = 15;
+    const itemsPerPage = req.query.itemsPerPage ? Number(req.query.itemsPerPage) : 10;
 
     const userId = req['userId'];
 
@@ -43,33 +43,40 @@ exports.fetchAllExpenses = async (req, res, next) => {
     const skip = (page - 1) * itemsPerPage;
 
     // fetch expenses based on available fields and sorted by user choice
+
+    //* Why am I fetching ALL EXPENSES?
+
+    //* Reasons:
+    //* - I need all expenses to calculate total expenses for finding total no of pages required
+    //* - if Expense.countDocuments function has an error, I won't get the total no of pages required, based on which no. of pages is determined
+    //* - since most users will have < 100 expenses for a month and max they can fetch for one page is 30 items
+    //* - and this is not a big diff, therefore I can fetch all expenses at once and
+    //* - slice them based on skip and itemsPerPage
+
     var expenses = await Expense.find({
         userId: userId,
         $or: [{ year, month: monthName }, { date: { $regex: dateRegex } }]
     })
         .select('id title amount date userId quantity year month category')
         .sort({ date: 'desc' })
-    // .skip(skip)
-    // .limit(itemsPerPage);
 
     // slice the expenses array based on skip and the rest
-
-    console.log(skip);
+    var next = skip + itemsPerPage;
+    console.log(typeof skip, typeof itemsPerPage);
+    console.log('range', skip, '-', next);
 
     if (expenses) {
 
         var pagedExpenses = expenses.slice(skip, skip + itemsPerPage);
 
-        console.log(pagedExpenses);
+        // console.log(pagedExpenses);
 
-        res.status(200).json(pagedExpenses);
+        res.status(200).json({ data: pagedExpenses, total: expenses.length });
 
         // cache expenses
         const client = req['redis-client'];
 
-        await client.set(`${userId}:expenses:${month}:${year}:total_expenses`, expenses.length);
-
-        cacheExpenses(client, userId, monthName, year, page, pagedExpenses);
+        cacheExpenses(client, userId, monthName, year, page, itemsPerPage, pagedExpenses, expenses.length);
     }
 
     else throw new CrudError(500, 'Failed to load expenses. Try again later.', apiEndpoint);
@@ -86,7 +93,7 @@ exports.fetchAllExpenses = async (req, res, next) => {
  */
 exports.addNewExpense = async (req, res, next) => {
 
-    const { page } = req.query;
+    const { page, itemsPerPage } = req.query;
 
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
@@ -121,42 +128,18 @@ exports.addNewExpense = async (req, res, next) => {
 
         // set update expense cache to true
         const client = req['redis-client'];
-        const cacheKey = `${userId}:expenses:${month}:${year}:${page}`;
+        const cacheKey = `${userId}:expenses:${month}:${year}:${page}:${itemsPerPage}`;
 
         // sending response
         res.status(200).json(expense);
 
+        const totalExpenseCacheKey = `${userId}:expenses:${month}:${year}:total_expenses`;
 
-        // re-orderig of item
-        var tempPage = 1;
+        var totalExpenses = await client.get(totalExpenseCacheKey);
 
-        var cachedExpenses = JSON.parse(await client.hGet(`${userId}:expenses:${month}:${year}:${tempPage}`, 'expenses'));
-        while (cachedExpenses != undefined) {
-            console.log('idhar aaya');
-            if (cachedExpenses) {
-                endDate = new Date(cachedExpenses[0].date);
-                startDate = new Date(cachedExpenses[cachedExpenses.length - 1].date);
-                const userDateFormatted = new Date(userDate);
-
-                if (userDateFormatted >= startDate && userDateFormatted <= endDate) {
-                    console.log(userLabel, 're-ordered');
-                    await client.hSet(cacheKey, 'updateExpenseCache', 'true');
-                    break;
-                }
-                // // if true, then current cached page needs update
-                // if (userDate >= recentExpense && userDate <= oldestExpense) {
-                //     console.log(userLabel, 're-ordered')
-                //     await client.hSet(cacheKey, 'updateExpenseCache', 'true');
-                //     break;
-                // }
-            }
-
-            tempPage++;
-
-            cachedExpenses = JSON.parse(await client.hGet(`${userId}:expenses:${month}:${year}:${tempPage}`, 'expenses'));
-
+        if (!totalExpenses) {
+            await client.set(totalExpenseCacheKey, totalExpenses + 1);
         }
-
 
 
     } catch (err) {
@@ -177,7 +160,7 @@ exports.addNewExpense = async (req, res, next) => {
  */
 exports.updateExpense = async (req, res, next) => {
 
-    const { page } = req.query;
+    const { page, itemsPerPage } = req.query;
 
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
     const { id } = req.params;
@@ -197,7 +180,7 @@ exports.updateExpense = async (req, res, next) => {
             // set update expense cache to true
             const client = req['redis-client'];
             const { email } = await User.findById(updatedExpense.userId);
-            const cacheKey = `${userId}:expenses:${updatedExpense.month}:${updatedExpense.year}:${page}`;
+            const cacheKey = `${userId}:expenses:${updatedExpense.month}:${updatedExpense.year}:${page}:${itemsPerPage}`;
             await client.hSet(cacheKey, 'updateExpenseCache', 'true');
 
         } catch (error) {
@@ -223,7 +206,7 @@ exports.updateExpense = async (req, res, next) => {
  */
 exports.deleteExpense = async (req, res, next) => {
 
-    const { page } = req.query;
+    const { page, itemsPerPage } = req.query;
 
     const apiEndpoint = req.method + '/ : ' + req.originalUrl;
 
@@ -250,7 +233,7 @@ exports.deleteExpense = async (req, res, next) => {
         try {
 
             // set update expense cache to true
-            const cacheKey = `${userId}:expenses:${month}:${year}:${page}`;
+            const cacheKey = `${userId}:expenses:${month}:${year}:${page}:${itemsPerPage}`;
 
             // delete cache with cacheKey from redis using redis client
             await client.del(cacheKey);

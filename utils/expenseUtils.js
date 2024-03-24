@@ -33,7 +33,7 @@ const monthNo = {
  * @param {[Object]} expenses List of expense Docs
  * @returns {void}
  */
-async function cacheExpenses(client, userId, month, year, page, expenses) {
+async function cacheExpenses(client, userId, month, year, page, itemsPerPage, expenses, totalExpenses) {
 
     var shouldCache = false;
 
@@ -41,7 +41,7 @@ async function cacheExpenses(client, userId, month, year, page, expenses) {
 
     if (month == curTime.month && year == curTime.year) shouldCache = true;
 
-    const reqCounterKey = `${userId}:expenses:counter:${month}:${year}:${page}`;
+    const reqCounterKey = `${userId}:expenses:counter:${month}:${year}:${page}:${itemsPerPage}`;
     const totalCounterSizeKey = `${userId}:expenses:counter:size`;
 
     let getReqCount = await client.get(reqCounterKey);
@@ -73,21 +73,20 @@ async function cacheExpenses(client, userId, month, year, page, expenses) {
             : await client.set(totalCounterSizeKey, 1);
 
         await client.set(reqCounterKey, 1);
-        client.expire(reqCounterKey, 1200);
+        client.expire(reqCounterKey, 120);
 
     } else
         getReqCount = await client.incr(reqCounterKey); // increment request count
 
-    // if no. of request is atleast twice or current month and year expenses requested, 
-    // cache the expenses
+    //* if no. of request is atleast twice or current month and year expenses requested, 
+    //* cache the expenses
     if (getReqCount >= 2 || shouldCache) {
 
-        const cacheKey = `${userId}:expenses:${month}:${year}:${page}`;
-        console.log("Hum toh idhhar hi hain", cacheKey);
+        const cacheKey = `${userId}:expenses:${month}:${year}:${page}:${itemsPerPage}`;
 
-        await client.hSet(cacheKey, 'expenses', JSON.stringify(expenses));
+        await client.hSet(cacheKey, 'expenses', JSON.stringify({ data: expenses, total: totalExpenses }));
         await client.hSet(cacheKey, 'updateExpenseCache', 'false');
-        await client.expire(cacheKey, 1800);
+        await client.expire(cacheKey, 120);
 
         console.log(await client.hGet(cacheKey, 'updateExpenseCache'));
     }
