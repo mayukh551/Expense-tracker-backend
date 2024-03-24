@@ -235,14 +235,10 @@ exports.deleteExpense = async (req, res, next) => {
             // set update expense cache to true
             const cacheKey = `${userId}:expenses:${month}:${year}:${page}:${itemsPerPage}`;
 
-            // delete cache with cacheKey from redis using redis client
-            await client.del(cacheKey);
-
-            // await client.hSet(cacheKey, 'updateExpenseCache', 'true');
+            // update cache 
+            await client.hSet(cacheKey, 'updateExpenseCache', 'true');
 
             res.status(200).json(deletedExpense);
-
-            // await client.del(cacheKey);
 
         } catch (error) {
             throw new CrudError(500, null, apiEndpoint);
