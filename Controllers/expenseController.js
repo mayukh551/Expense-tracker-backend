@@ -129,6 +129,7 @@ exports.addNewExpense = async (req, res, next) => {
         // set update expense cache to true
         const client = req['redis-client'];
         const cacheKey = `${userId}:expenses:${month}:${year}:${page}:${itemsPerPage}`;
+        await client.hSet(cacheKey, 'updateExpenseCache', 'true');
 
         // sending response
         res.status(200).json(expense);
