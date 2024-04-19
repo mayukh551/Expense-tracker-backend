@@ -73,7 +73,7 @@ async function cacheExpenses(client, userId, month, year, expenses) {
             : await client.set(totalCounterSizeKey, 1);
 
         await client.set(reqCounterKey, 1);
-        client.expire(reqCounterKey, 1200);
+        client.expire(reqCounterKey, 120);
 
     } else
         getReqCount = await client.incr(reqCounterKey); // increment request count
@@ -82,11 +82,11 @@ async function cacheExpenses(client, userId, month, year, expenses) {
     if (getReqCount >= 2 || shouldCache) {
 
         const cacheKey = `${userId}:expenses:${month}:${year}`;
-        console.log("Hum toh idhhar hi hain", cacheKey);
+        // console.log("Hum toh idhhar hi hain", cacheKey);
 
         await client.hSet(cacheKey, 'expenses', JSON.stringify(expenses));
         await client.hSet(cacheKey, 'updateExpenseCache', 'false');
-        await client.expire(cacheKey, 1800);
+        await client.expire(cacheKey, 120);
 
         console.log(await client.hGet(cacheKey, 'updateExpenseCache'));
     }
