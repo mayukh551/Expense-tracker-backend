@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const AuthError = require('../Error/AuthError');
+const asyncWrap = require('./async-wrapper')
 
-const verifyUser = (req, res, next) => {
+const verifyUser = asyncWrap((req, res, next) => {
 
     const apiEndpoint = req.originalUrl;
 
@@ -21,8 +22,8 @@ const verifyUser = (req, res, next) => {
 
 
     } catch (error) {
-        next(error);
+        throw new AuthError(401, 'Unauthorized Attempt!', apiEndpoint, error);
     }
-}
+})
 
 module.exports = verifyUser;
