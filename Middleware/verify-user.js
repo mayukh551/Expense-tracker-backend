@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const AuthError = require('../Error/AuthError');
+const asyncWrap = require('./async-wrapper')
 
 const verifyUser = (req, res, next) => {
 
@@ -21,7 +22,7 @@ const verifyUser = (req, res, next) => {
 
 
     } catch (error) {
-        next(error);
+        next(new AuthError(401, 'Unauthorized Attempt!', apiEndpoint, error));
     }
 }
 

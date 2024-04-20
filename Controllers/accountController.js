@@ -127,8 +127,6 @@ const deleteAccount = async (req, res, next) => {
         if (!account)
             throw new UserError(401, "User not found", apiEndpoint);
 
-        await delCache();
-
         res.status(200).json({ message: "Account Deleted Successfully" });
 
     } catch (error) {
@@ -136,27 +134,6 @@ const deleteAccount = async (req, res, next) => {
     }
 }
 
-
-async function delCache() {
-    return new Promise((resolve, reject) => {
-        // Find keys that match the pattern "*expenses*"
-        client.keys('*expenses*', (err, keys) => {
-            if (err) throw err;
-
-            // Delete the matching keys
-            if (keys.length > 0) {
-                client.del(keys, (err, reply) => {
-                    if (err) throw err;
-                    console.log(`Deleted ${reply} keys`);
-                });
-
-                resolve();
-            } else {
-                reject('No matching keys found');
-            }
-        });
-    })
-}
 
 module.exports = {
     createAccount,

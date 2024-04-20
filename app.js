@@ -8,6 +8,7 @@ const analyticsRouter = require('./Routers/analytics.router');
 const accountRouter = require('./Routers/account.router');
 const errorHandler = require('./Middleware/error-handler');
 const dayjs = require('dayjs')
+const rateLimiter = require('./Middleware/rate-limiter');
 
 app.use(cors({
     origin: '*'
@@ -39,6 +40,9 @@ app.use((req, res, next) => {
     console.log(`Incoming Request at ${dayjs().hour()}:${dayjs().minute()}\n`);
     next();
 })
+
+// rate limiter
+app.use(rateLimiter);
 
 // API Routes
 app.use('/auth', authRouter);
