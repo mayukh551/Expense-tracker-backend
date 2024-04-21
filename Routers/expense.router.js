@@ -5,6 +5,7 @@ const expenseController = require('../Controllers/expenseController');
 const verifyUser = require('../Middleware/verify-user');
 const { validateExpenseSchema } = require('../Middleware/schema-validator');
 const cacheData = require('../Middleware/cache-data');
+const getExpenseStats = require('../Controllers/expenseStats');
 const {
     fetchAllExpenses,
     addNewExpense,
@@ -25,6 +26,11 @@ router.route('/delete').post(verifyUser, cacheData, asyncWrap(deleteExpense));
 // UPDATE AN EXPENSE
 // router.route('/update/:id').put(verifyUser, validateExpenseSchema, cacheData, asyncWrap(updateExpense));
 router.route('/update/:id').put(verifyUser, cacheData, asyncWrap(updateExpense));
+
+
+// expense stats
+router.route('/stats').get(verifyUser, asyncWrap(getExpenseStats));
+
 
 router.route('*').get((req, res) => {
     console.log('Invalid URL');
