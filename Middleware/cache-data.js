@@ -35,6 +35,13 @@ const cacheData = asyncWrap(async (req, res, next) => {
     var cachedData;
     if (req.method === 'GET') {
 
+        reload = JSON.parse(req.query.reload);
+
+        if (reload) {
+            console.log('Reload is True, on to next middleware');
+            return next();
+        }
+
         // cache key format: email:expenses:month:year
         const cacheKey = `${user._id}:expenses:${month}:${year}:${page}:${itemsPerPage}`;
         console.log('in cache data middleware', cacheKey);

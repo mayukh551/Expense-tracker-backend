@@ -62,7 +62,6 @@ exports.fetchAllExpenses = async (req, res, next) => {
 
     // slice the expenses array based on skip and the rest
     var next = skip + itemsPerPage;
-    console.log(typeof skip, typeof itemsPerPage);
     console.log('range', skip, '-', next);
 
     if (expenses) {
