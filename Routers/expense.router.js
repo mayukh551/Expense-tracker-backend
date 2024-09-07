@@ -13,6 +13,7 @@ const {
     deleteExpense
 } = expenseController;
 
+const { exportExpensesExcel } = require('../Controllers/excel');
 
 // FETCH ALL EXPENSES
 router.route('/').get(verifyUser, cacheData, asyncWrap(fetchAllExpenses));
@@ -30,6 +31,9 @@ router.route('/update/:id').put(verifyUser, cacheData, asyncWrap(updateExpense))
 
 // expense stats
 router.route('/stats').get(verifyUser, asyncWrap(getExpenseStats));
+
+// export expenses to excel
+router.route('/export').get(verifyUser, asyncWrap(exportExpensesExcel));
 
 
 router.route('*').get((req, res) => {

@@ -35,9 +35,8 @@ const cacheData = asyncWrap(async (req, res, next) => {
     var cachedData;
     if (req.method === 'GET') {
 
-        reload = JSON.parse(req.query.reload);
-
-        if (reload) {
+        // If reload is true, on to next middleware
+        if (req.query.reload) {
             console.log('Reload is True, on to next middleware');
             return next();
         }
